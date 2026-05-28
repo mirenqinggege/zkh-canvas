@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "5.0",
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
@@ -15,12 +14,6 @@
     "declarationMap": true,
     "outDir": "./dist",
     "rootDir": "./renderer",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./renderer/*"
-      ]
-    },
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
