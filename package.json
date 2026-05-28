@@ -17,7 +17,7 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "publish": "npm publish --registry https://registry.npmjs.org/"
+    "push": "npm publish --registry https://registry.npmjs.org/"
   },
   "files": [
     "dist",
