@@ -66,6 +66,10 @@ export class WechatAdapter implements CanvasAdapter {
   }
 
   destroy(): void {
+    // 重置变换矩阵，避免下次初始化时累积
+    if (this.ctx) {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
     this.canvas = null;
     this.ctx = null;
     this.imageCache.clear();
@@ -240,6 +244,9 @@ export class WechatAdapter implements CanvasAdapter {
   applyDPR(): void {
     this.ensureCanvas();
 
+    // 先重置变换矩阵，避免多次调用时缩放累积
+    this.ctx!.setTransform(1, 0, 0, 1, 0, 0);
+
     // 物理 Canvas 尺寸 = 显示尺寸 × DPR
     const physicalWidth = Math.floor(this.displayWidth * this.dpr);
     const physicalHeight = Math.floor(this.displayHeight * this.dpr);
@@ -281,7 +288,11 @@ export class WechatAdapter implements CanvasAdapter {
 
   clear(): void {
     this.ensureContext();
-    this.ctx!.clearRect(0, 0, this.displayWidth, this.displayHeight);
+    // 重置变换矩阵后再清除，确保清除范围正确
+    this.ctx!.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx!.clearRect(0, 0, this.displayWidth * this.dpr, this.displayHeight * this.dpr);
+    // 重新应用 DPR 缩放
+    this.ctx!.scale(this.dpr, this.dpr);
   }
 
   private drawRoundRectPath(x: number, y: number, w: number, h: number, rx: number, ry: number): void {
