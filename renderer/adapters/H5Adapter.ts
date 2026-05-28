@@ -250,6 +250,16 @@ export class H5Adapter implements CanvasAdapter {
     });
   }
 
+  getImageWidth(image: ImageHandle): number {
+    const img = image as HTMLImageElement;
+    return img.naturalWidth || img.width || 0;
+  }
+
+  getImageHeight(image: ImageHandle): number {
+    const img = image as HTMLImageElement;
+    return img.naturalHeight || img.height || 0;
+  }
+
   drawImage(image: ImageHandle, x: number, y: number, w: number, h: number): void {
     this.ensureContext();
     this.ctx!.drawImage(image as CanvasImageSource, x, y, w, h);

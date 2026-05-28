@@ -37,8 +37,11 @@ export class ImagePreloader {
       try {
         const imageHandle = await this.adapter.loadImage(node.src);
         node.imageHandle = imageHandle;
+        // 保存图片原始尺寸
+        node.imageWidth = this.adapter.getImageWidth(imageHandle);
+        node.imageHeight = this.adapter.getImageHeight(imageHandle);
         result.loaded.push(node.id);
-        logger.debug(`图片加载成功: ${node.src}`);
+        logger.debug(`图片加载成功: ${node.src}`, {width: node.imageWidth, height: node.imageHeight});
       } catch (err) {
         const error: ImageLoadError = {
           id: node.id,

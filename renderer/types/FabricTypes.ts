@@ -82,12 +82,18 @@ export interface FabricText extends FabricObjectBase {
 }
 
 /**
+ * 图片填充模式
+ */
+export type FillMode = 'fill' | 'cover' | 'contain';
+
+/**
  * Image 对象
  */
 export interface FabricImage extends FabricObjectBase {
   type: 'image';
   src?: string;
   crossOrigin?: string;
+  fillMode?: FillMode;
 }
 
 /**

@@ -1,4 +1,4 @@
-import type {FabricImage, FabricClipPath} from '../../types/FabricTypes';
+import type {FabricImage, FabricClipPath, FillMode} from '../../types/FabricTypes';
 import type {ImageNode, ClipInfo} from '../../scene/nodes/ImageNode';
 import {createImageNode} from '../../scene/nodes/ImageNode';
 import {TransformConverter} from '../TransformConverter';
@@ -27,6 +27,9 @@ export class ImageParser {
       // 解析裁剪信息
       const clip = this.parseClipPath(obj.clipPath, obj.width, obj.height);
 
+      // 解析填充模式
+      const fillMode: FillMode = obj.fillMode || 'fill';
+
       // 创建节点
       const node = createImageNode(
         obj.id || `image-${Date.now()}`,
@@ -41,11 +44,12 @@ export class ImageParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          fillMode,
           clip,
         }
       );
 
-      logger.debug('Image 解析成功', {id: node.id, src: node.src, clip: node.clip});
+      logger.debug('Image 解析成功', {id: node.id, src: node.src, fillMode: node.fillMode, clip: node.clip});
 
       return node;
     } catch (error) {

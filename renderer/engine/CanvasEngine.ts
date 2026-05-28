@@ -52,6 +52,12 @@ export class CanvasEngine {
   async render(json: FabricExportJSON): Promise<RenderResult> {
     logger.info('开始渲染流程');
 
+    // 0. 根据 JSON 设置 Canvas 尺寸
+    if (json.width && json.height) {
+      logger.debug('根据 JSON 设置 Canvas 尺寸', {width: json.width, height: json.height});
+      this.resize(json.width, json.height);
+    }
+
     // 1. 解析 JSON
     const graph = this.parser.parse(json);
 

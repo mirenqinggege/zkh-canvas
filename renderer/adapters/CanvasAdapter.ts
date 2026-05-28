@@ -138,6 +138,16 @@ export interface CanvasAdapter {
   loadImage(src: string): Promise<ImageHandle>;
 
   /**
+   * 获取图片原始宽度
+   */
+  getImageWidth(image: ImageHandle): number;
+
+  /**
+   * 获取图片原始高度
+   */
+  getImageHeight(image: ImageHandle): number;
+
+  /**
    * 绘制图片
    */
   drawImage(image: ImageHandle, x: number, y: number, w: number, h: number): void;

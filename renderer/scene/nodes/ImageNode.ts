@@ -6,6 +6,11 @@ import type {SceneNode} from '../SceneNode';
 export type ImageHandle = unknown;
 
 /**
+ * 图片填充模式
+ */
+export type FillMode = 'fill' | 'cover' | 'contain';
+
+/**
  * 裁剪信息
  */
 export interface ClipInfo {
@@ -27,6 +32,15 @@ export interface ImageNode extends SceneNode {
   /** 加载后的图片对象（预加载后填充） */
   imageHandle?: ImageHandle;
 
+  /** 图片原始宽度 */
+  imageWidth?: number;
+
+  /** 图片原始高度 */
+  imageHeight?: number;
+
+  /** 填充模式 */
+  fillMode?: FillMode;
+
   /** 裁剪信息 */
   clip?: ClipInfo;
 }
@@ -47,6 +61,7 @@ export function createImageNode(
     rotation?: number;
     scaleX?: number;
     scaleY?: number;
+    fillMode?: FillMode;
     clip?: ClipInfo;
   }
 ): ImageNode {
@@ -66,6 +81,7 @@ export function createImageNode(
     rotation: options?.rotation ?? 0,
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
+    fillMode: options?.fillMode ?? 'fill',
     clip: options?.clip,
   };
 }
