@@ -210,12 +210,13 @@ export class WechatAdapter implements CanvasAdapter {
       this.ensureCanvas();
 
       // 微信小程序的 createImage 方法挂载在 canvas 对象上
+      // 返回的对象兼容 CanvasImageSource，且有 onload/onerror/src 属性
       const img = this.canvas!.createImage();
 
       img.onload = () => {
-        this.imageCache.set(src, img as unknown as ImageHandle);
+        this.imageCache.set(src, img as ImageHandle);
         logger.debug(`图片加载成功: ${src}`);
-        resolve(img as unknown as ImageHandle);
+        resolve(img as ImageHandle);
       };
 
       img.onerror = (err: Error) => {
@@ -229,6 +230,7 @@ export class WechatAdapter implements CanvasAdapter {
 
   drawImage(image: ImageHandle, x: number, y: number, w: number, h: number): void {
     this.ensureContext();
+    // 微信小程序 Canvas 2D 的 drawImage 接受 createImage 创建的对象
     this.ctx!.drawImage(image as CanvasImageSource, x, y, w, h);
   }
 
@@ -304,16 +306,15 @@ export class WechatAdapter implements CanvasAdapter {
       uni.createSelectorQuery()
         .select(`#${this.canvasId}`)
         .fields({ node: true, size: true })
-        .exec((res) => {
-          const firstItem = res[0] as { node?: UniCanvas; width?: number; height?: number } | undefined;
-          if (firstItem && firstItem.node) {
-            const canvas = firstItem.node;
+        .exec((res: SelectorQueryResultItem[]) => {
+          if (res && res[0] && res[0].node) {
+            const canvas = res[0].node as UniCanvas;
             // 获取实际尺寸
-            if (firstItem.width) {
-              this.displayWidth = firstItem.width;
+            if (res[0].width) {
+              this.displayWidth = res[0].width;
             }
-            if (firstItem.height) {
-              this.displayHeight = firstItem.height;
+            if (res[0].height) {
+              this.displayHeight = res[0].height;
             }
             resolve(canvas);
           } else {
@@ -337,12 +338,4 @@ export class WechatAdapter implements CanvasAdapter {
   }
 }
 
-/**
- * uni-app Canvas 类型定义
- */
-interface UniCanvas {
-  width: number;
-  height: number;
-  getContext(contextType: '2d'): CanvasRenderingContext2D | null;
-  createImage(): CanvasImageSource;
-}
+// UniCanvas 类型已在 types/uni-canvas.d.ts 中定义

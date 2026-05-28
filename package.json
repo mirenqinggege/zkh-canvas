@@ -21,6 +21,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@types/uni-app": "^1.4.8",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0"
   }
