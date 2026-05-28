@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "ES2020",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -13,7 +16,9 @@
     "rootDir": "./renderer",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./renderer/*"]
+      "@/*": [
+        "./renderer/*"
+      ]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -22,6 +27,12 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["renderer/**/*.ts", "types/**/*.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "renderer/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
