@@ -1,0 +1,27 @@
+{
+  "name": "zkh-canvas-renderer",
+  "version": "0.1.0",
+  "description": "uni-app 跨端 Canvas 渲染引擎",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "uni-app",
+    "canvas",
+    "fabric",
+    "renderer"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
