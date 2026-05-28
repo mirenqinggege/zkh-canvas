@@ -6,4 +6,4 @@ dist
 *.zip
 *.gz
 .idea
-./test/*
+test
