@@ -1,6 +1,6 @@
-import type { FabricObjectBase } from '../types/FabricTypes';
-import { degToRad } from '../utils/MathUtils';
-import { logger } from '../utils/Logger';
+import type {FabricObjectBase} from '../types/FabricTypes';
+import {degToRad} from '../utils/MathUtils';
+import {logger} from '../utils/Logger';
 
 /**
  * 坐标转换结果
@@ -27,7 +27,7 @@ export class TransformConverter {
    * 转换 Fabric 对象的坐标和 Transform
    */
   static convert(obj: FabricObjectBase): TransformResult {
-    const { left, top, width, height, scaleX = 1, scaleY = 1, angle = 0 } = obj;
+    const {left, top, width, height, scaleX = 1, scaleY = 1, angle = 0} = obj;
 
     // Fabric 默认使用中心点坐标 (originX='center', originY='center')
     // 转换为左上角坐标
@@ -58,12 +58,12 @@ export class TransformConverter {
     const rotation = degToRad(angle);
 
     logger.debug('坐标转换', {
-      original: { left, top, width, height },
-      converted: { x, y },
-      transform: { rotation, scaleX, scaleY },
+      original: {left, top, width, height},
+      converted: {x, y},
+      transform: {rotation, scaleX, scaleY},
     });
 
-    return { x, y, rotation, scaleX, scaleY };
+    return {x, y, rotation, scaleX, scaleY};
   }
 
   /**

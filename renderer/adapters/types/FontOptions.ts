@@ -1,4 +1,4 @@
-import type { TextAlign } from '../../scene/nodes/TextNode';
+import type {TextAlign} from '../../scene';
 
 /**
  * 字体配置选项

@@ -27,7 +27,7 @@ class LoggerImpl {
    * 设置日志配置
    */
   setConfig(config: Partial<LoggerConfig>): void {
-    this.config = { ...this.config, ...config };
+    this.config = {...this.config, ...config};
   }
 
   /**

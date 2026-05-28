@@ -1,5 +1,5 @@
-import type { SceneNode } from '../scene/SceneNode';
-import type { CanvasAdapter } from '../adapters/CanvasAdapter';
+import type {SceneNode} from '../scene/SceneNode';
+import type {CanvasAdapter} from '../adapters/CanvasAdapter';
 
 /**
  * 节点渲染器接口

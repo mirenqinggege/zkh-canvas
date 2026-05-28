@@ -1,8 +1,8 @@
-import type { SceneGraph } from '../scene/SceneGraph';
-import type { ImageNode } from '../scene/nodes/ImageNode';
-import type { CanvasAdapter } from '../adapters/CanvasAdapter';
-import type { ImageLoadResult, ImageLoadError } from '../types/RenderResult';
-import { logger } from '../utils/Logger';
+import type {SceneGraph} from '../scene/SceneGraph';
+import type {ImageNode} from '../scene/nodes/ImageNode';
+import type {CanvasAdapter} from '../adapters/CanvasAdapter';
+import type {ImageLoadError, ImageLoadResult} from '../types/RenderResult';
+import {logger} from '../utils/Logger';
 
 /**
  * 图片预加载器

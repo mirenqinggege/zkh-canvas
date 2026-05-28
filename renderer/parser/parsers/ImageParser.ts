@@ -1,8 +1,8 @@
-import type { FabricImage } from '../../types/FabricTypes';
-import type { ImageNode } from '../../scene/nodes/ImageNode';
-import { createImageNode } from '../../scene/nodes/ImageNode';
-import { TransformConverter } from '../TransformConverter';
-import { logger } from '../../utils/Logger';
+import type {FabricImage} from '../../types/FabricTypes';
+import type {ImageNode} from '../../scene/nodes/ImageNode';
+import {createImageNode} from '../../scene/nodes/ImageNode';
+import {TransformConverter} from '../TransformConverter';
+import {logger} from '../../utils/Logger';
 
 /**
  * Fabric Image 对象解析器
@@ -21,7 +21,7 @@ export class ImageParser {
       const src = this.extractImageSrc(obj);
 
       if (!src) {
-        logger.warn('Image 缺少 src', { object: obj });
+        logger.warn('Image 缺少 src', {object: obj});
         return null;
       }
 
@@ -42,11 +42,11 @@ export class ImageParser {
         }
       );
 
-      logger.debug('Image 解析成功', { id: node.id, src: node.src });
+      logger.debug('Image 解析成功', {id: node.id, src: node.src});
 
       return node;
     } catch (error) {
-      logger.warn('Image 解析失败', { object: obj, error });
+      logger.warn('Image 解析失败', {object: obj, error});
       return null;
     }
   }

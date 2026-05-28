@@ -1,5 +1,5 @@
-import type { ImageHandle } from './types/ImageHandle';
-import type { FontOptions } from './types/FontOptions';
+import type {ImageHandle} from './types/ImageHandle';
+import type {FontOptions} from './types/FontOptions';
 
 /**
  * Canvas 适配器接口

@@ -1,8 +1,8 @@
-import type { GroupNode } from '../../scene/nodes/GroupNode';
-import type { SceneNode } from '../../scene/SceneNode';
-import type { CanvasAdapter } from '../../adapters/CanvasAdapter';
-import type { NodeRenderer } from '../NodeRenderer';
-import { logger } from '../../utils/Logger';
+import type {GroupNode} from '../../scene/nodes/GroupNode';
+import type {SceneNode} from '../../scene/SceneNode';
+import type {CanvasAdapter} from '../../adapters/CanvasAdapter';
+import type {NodeRenderer} from '../NodeRenderer';
+import {logger} from '../../utils/Logger';
 
 /**
  * 组节点渲染器
@@ -16,7 +16,7 @@ export class GroupRenderer implements NodeRenderer<GroupNode> {
   }
 
   render(node: GroupNode, adapter: CanvasAdapter): void {
-    const { children, opacity } = node;
+    const {children, opacity} = node;
 
     // 渲染所有子节点
     for (const child of children) {

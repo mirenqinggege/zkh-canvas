@@ -1,5 +1,5 @@
-export type { NodeType } from './NodeType';
-export { SUPPORTED_NODE_TYPES, isSupportedNodeType } from './NodeType';
+export type {NodeType} from './NodeType';
+export {SUPPORTED_NODE_TYPES, isSupportedNodeType} from './NodeType';
 export type {
   FabricObjectBase,
   FabricRect,

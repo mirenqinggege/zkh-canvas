@@ -1,13 +1,13 @@
-import type { CircleNode } from '../../scene/nodes/CircleNode';
-import type { CanvasAdapter } from '../../adapters/CanvasAdapter';
-import type { NodeRenderer } from '../NodeRenderer';
+import type {CircleNode} from '../../scene/nodes/CircleNode';
+import type {CanvasAdapter} from '../../adapters/CanvasAdapter';
+import type {NodeRenderer} from '../NodeRenderer';
 
 /**
  * 圆形渲染器
  */
 export class CircleRenderer implements NodeRenderer<CircleNode> {
   render(node: CircleNode, adapter: CanvasAdapter): void {
-    const { radius, fill, stroke, strokeWidth } = node;
+    const {radius, fill, stroke, strokeWidth} = node;
 
     // 圆心位于节点中心 (radius, radius)
     const cx = radius;

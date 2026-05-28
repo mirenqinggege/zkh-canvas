@@ -1,13 +1,13 @@
-import type { TextNode } from '../../scene/nodes/TextNode';
-import type { CanvasAdapter } from '../../adapters/CanvasAdapter';
-import type { NodeRenderer } from '../NodeRenderer';
+import type {TextNode} from '../../scene/nodes/TextNode';
+import type {CanvasAdapter} from '../../adapters/CanvasAdapter';
+import type {NodeRenderer} from '../NodeRenderer';
 
 /**
  * 文本渲染器
  */
 export class TextRenderer implements NodeRenderer<TextNode> {
   render(node: TextNode, adapter: CanvasAdapter): void {
-    const { text, fontSize, fontFamily, fontWeight, textAlign, fill, stroke, strokeWidth } = node;
+    const {text, fontSize, fontFamily, fontWeight, textAlign, fill, stroke, strokeWidth} = node;
 
     // 设置字体
     adapter.setFont({

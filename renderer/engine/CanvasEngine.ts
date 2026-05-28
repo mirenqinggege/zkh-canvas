@@ -1,9 +1,9 @@
-import type { FabricExportJSON, RenderResult } from '../types';
-import type { CanvasAdapter } from '../adapters/CanvasAdapter';
-import { FabricParser } from '../parser/FabricParser';
-import { SceneRenderer } from '../renderer/SceneRenderer';
-import { ImagePreloader } from './ImagePreloader';
-import { logger } from '../utils/Logger';
+import type {FabricExportJSON, RenderResult} from '../types';
+import type {CanvasAdapter} from '../adapters/CanvasAdapter';
+import {FabricParser} from '../parser/FabricParser';
+import {SceneRenderer} from '../renderer/SceneRenderer';
+import {ImagePreloader} from './ImagePreloader';
+import {logger} from '../utils/Logger';
 
 /**
  * Canvas 渲染引擎配置
@@ -68,7 +68,7 @@ export class CanvasEngine {
       failedImages: loadResult.failed,
     };
 
-    logger.info('渲染流程完成', { success: result.success });
+    logger.info('渲染流程完成', {success: result.success});
 
     return result;
   }

@@ -1,14 +1,14 @@
-import type { SceneNode } from '../scene/SceneNode';
-import type { NodeType } from '../types/NodeType';
-import type { CanvasAdapter } from '../adapters/CanvasAdapter';
-import type { NodeRenderer } from './NodeRenderer';
-import type { SceneGraph } from '../scene/SceneGraph';
-import { RectRenderer } from './renderers/RectRenderer';
-import { CircleRenderer } from './renderers/CircleRenderer';
-import { TextRenderer } from './renderers/TextRenderer';
-import { ImageRenderer } from './renderers/ImageRenderer';
-import { GroupRenderer } from './renderers/GroupRenderer';
-import { logger } from '../utils/Logger';
+import type {SceneNode} from '../scene/SceneNode';
+import type {NodeType} from '../types/NodeType';
+import type {CanvasAdapter} from '../adapters/CanvasAdapter';
+import type {NodeRenderer} from './NodeRenderer';
+import type {SceneGraph} from '../scene/SceneGraph';
+import {RectRenderer} from './renderers/RectRenderer';
+import {CircleRenderer} from './renderers/CircleRenderer';
+import {TextRenderer} from './renderers/TextRenderer';
+import {ImageRenderer} from './renderers/ImageRenderer';
+import {GroupRenderer} from './renderers/GroupRenderer';
+import {logger} from '../utils/Logger';
 
 /**
  * 场景渲染器
@@ -42,7 +42,7 @@ export class SceneRenderer {
    * 渲染场景图
    */
   render(graph: SceneGraph, adapter: CanvasAdapter): void {
-    logger.info('开始渲染场景', { nodesCount: graph.getNodeCount() });
+    logger.info('开始渲染场景', {nodesCount: graph.getNodeCount()});
 
     // 清空画布
     adapter.clear();

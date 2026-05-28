@@ -57,8 +57,10 @@ declare global {
     width: number;
     /** Canvas 高度 */
     height: number;
+
     /** 获取 Canvas 2D Context */
     getContext(contextType: '2d'): CanvasRenderingContext2D | null;
+
     /** 创建图片对象（兼容 CanvasImageSource） */
     createImage(): CanvasImageSource & {
       /** 图片源 */

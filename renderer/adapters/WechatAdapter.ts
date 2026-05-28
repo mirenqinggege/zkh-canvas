@@ -1,7 +1,7 @@
-import type { CanvasAdapter } from './CanvasAdapter';
-import type { ImageHandle, FontOptions } from './types';
-import { fontOptionsToString } from './types';
-import { logger } from '../utils/Logger';
+import type {CanvasAdapter} from './CanvasAdapter';
+import type {FontOptions, ImageHandle} from './types';
+import {fontOptionsToString} from './types';
+import {logger} from '../utils/Logger';
 
 /**
  * 微信小程序 Canvas 2D API 适配器
@@ -164,41 +164,17 @@ export class WechatAdapter implements CanvasAdapter {
     this.ctx!.stroke();
   }
 
-  private drawRoundRectPath(x: number, y: number, w: number, h: number, rx: number, ry: number): void {
-    const ctx = this.ctx!;
-    ctx.beginPath();
-
-    // 确保圆角不超过矩形尺寸的一半
-    rx = Math.min(rx, w / 2);
-    ry = Math.min(ry, h / 2);
-
-    // 绘制圆角矩形路径
-    ctx.moveTo(x + rx, y);
-    ctx.lineTo(x + w - rx, y);
-    ctx.arcTo(x + w, y, x + w, y + ry, rx);
-    ctx.lineTo(x + w, y + h - ry);
-    ctx.arcTo(x + w, y + h, x + w - ry, y + h, ry);
-    ctx.lineTo(x + rx, y + h);
-    ctx.arcTo(x, y + h, x, y + h - ry, rx);
-    ctx.lineTo(x, y + ry);
-    ctx.arcTo(x, y, x + rx, y, rx);
-
-    ctx.closePath();
-  }
-
-  // ============ 文本绘制 ============
-
   setFont(options: FontOptions): void {
     this.ensureContext();
     this.ctx!.font = fontOptionsToString(options);
   }
 
+  // ============ 文本绘制 ============
+
   fillText(text: string, x: number, y: number): void {
     this.ensureContext();
     this.ctx!.fillText(text, x, y);
   }
-
-  // ============ 图片绘制 ============
 
   async loadImage(src: string): Promise<ImageHandle> {
     // 检查缓存
@@ -228,13 +204,13 @@ export class WechatAdapter implements CanvasAdapter {
     });
   }
 
+  // ============ 图片绘制 ============
+
   drawImage(image: ImageHandle, x: number, y: number, w: number, h: number): void {
     this.ensureContext();
     // 微信小程序 Canvas 2D 的 drawImage 接受 createImage 创建的对象
     this.ctx!.drawImage(image as CanvasImageSource, x, y, w, h);
   }
-
-  // ============ DPR 支持 ============
 
   applyDPR(): void {
     this.ensureCanvas();
@@ -252,11 +228,11 @@ export class WechatAdapter implements CanvasAdapter {
     logger.debug(`应用 DPR 缩放: ${this.displayWidth}x${this.displayHeight} -> ${physicalWidth}x${physicalHeight} (DPR: ${this.dpr})`);
   }
 
+  // ============ DPR 支持 ============
+
   getDPR(): number {
     return this.dpr;
   }
-
-  // ============ Canvas 尺寸 ============
 
   resize(width: number, height: number): void {
     this.displayWidth = width;
@@ -267,6 +243,8 @@ export class WechatAdapter implements CanvasAdapter {
       this.clear();
     }
   }
+
+  // ============ Canvas 尺寸 ============
 
   getWidth(): number {
     return this.displayWidth;
@@ -279,6 +257,28 @@ export class WechatAdapter implements CanvasAdapter {
   clear(): void {
     this.ensureContext();
     this.ctx!.clearRect(0, 0, this.displayWidth, this.displayHeight);
+  }
+
+  private drawRoundRectPath(x: number, y: number, w: number, h: number, rx: number, ry: number): void {
+    const ctx = this.ctx!;
+    ctx.beginPath();
+
+    // 确保圆角不超过矩形尺寸的一半
+    rx = Math.min(rx, w / 2);
+    ry = Math.min(ry, h / 2);
+
+    // 绘制圆角矩形路径
+    ctx.moveTo(x + rx, y);
+    ctx.lineTo(x + w - rx, y);
+    ctx.arcTo(x + w, y, x + w, y + ry, rx);
+    ctx.lineTo(x + w, y + h - ry);
+    ctx.arcTo(x + w, y + h, x + w - ry, y + h, ry);
+    ctx.lineTo(x + rx, y + h);
+    ctx.arcTo(x, y + h, x, y + h - ry, rx);
+    ctx.lineTo(x, y + ry);
+    ctx.arcTo(x, y, x + rx, y, rx);
+
+    ctx.closePath();
   }
 
   // ============ 辅助方法 ============
@@ -305,7 +305,7 @@ export class WechatAdapter implements CanvasAdapter {
     return new Promise((resolve) => {
       uni.createSelectorQuery()
         .select(`#${this.canvasId}`)
-        .fields({ node: true, size: true })
+        .fields({node: true, size: true})
         .exec((res: SelectorQueryResultItem[]) => {
           if (res && res[0] && res[0].node) {
             const canvas = res[0].node as UniCanvas;

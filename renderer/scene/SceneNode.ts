@@ -1,4 +1,4 @@
-import type { NodeType } from '../types';
+import type {NodeType} from '../types';
 
 /**
  * 场景节点基础接口

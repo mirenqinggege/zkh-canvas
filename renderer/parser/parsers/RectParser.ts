@@ -1,9 +1,9 @@
-import type { FabricRect } from '../../types/FabricTypes';
-import type { RectNode } from '../../scene/nodes/RectNode';
-import { createRectNode } from '../../scene/nodes/RectNode';
-import { TransformConverter } from '../TransformConverter';
-import { normalizeColor } from '../../utils/ColorParser';
-import { logger } from '../../utils/Logger';
+import type {FabricRect} from '../../types/FabricTypes';
+import type {RectNode} from '../../scene/nodes/RectNode';
+import {createRectNode} from '../../scene/nodes/RectNode';
+import {TransformConverter} from '../TransformConverter';
+import {normalizeColor} from '../../utils/ColorParser';
+import {logger} from '../../utils/Logger';
 
 /**
  * Fabric Rect 对象解析器
@@ -38,11 +38,14 @@ export class RectParser {
         }
       );
 
-      logger.debug('Rect 解析成功', { id: node.id, bounds: { x: node.x, y: node.y, width: node.width, height: node.height } });
+      logger.debug('Rect 解析成功', {
+        id: node.id,
+        bounds: {x: node.x, y: node.y, width: node.width, height: node.height}
+      });
 
       return node;
     } catch (error) {
-      logger.warn('Rect 解析失败', { object: obj, error });
+      logger.warn('Rect 解析失败', {object: obj, error});
       return null;
     }
   }

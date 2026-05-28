@@ -1,14 +1,14 @@
-import type { ImageNode } from '../../scene/nodes/ImageNode';
-import type { CanvasAdapter } from '../../adapters/CanvasAdapter';
-import type { NodeRenderer } from '../NodeRenderer';
-import { logger } from '../../utils/Logger';
+import type {ImageNode} from '../../scene/nodes/ImageNode';
+import type {CanvasAdapter} from '../../adapters/CanvasAdapter';
+import type {NodeRenderer} from '../NodeRenderer';
+import {logger} from '../../utils/Logger';
 
 /**
  * 图片渲染器
  */
 export class ImageRenderer implements NodeRenderer<ImageNode> {
   render(node: ImageNode, adapter: CanvasAdapter): void {
-    const { width, height, imageHandle, src } = node;
+    const {width, height, imageHandle, src} = node;
 
     // 检查图片是否已加载
     if (!imageHandle) {

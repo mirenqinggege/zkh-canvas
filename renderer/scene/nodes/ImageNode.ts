@@ -1,4 +1,4 @@
-import type { SceneNode } from '../SceneNode';
+import type {SceneNode} from '../SceneNode';
 
 /**
  * 图片引用类型（平台无关）

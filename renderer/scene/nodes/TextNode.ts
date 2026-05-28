@@ -1,4 +1,4 @@
-import type { SceneNode } from '../SceneNode';
+import type {SceneNode} from '../SceneNode';
 
 /**
  * 文本对齐方式

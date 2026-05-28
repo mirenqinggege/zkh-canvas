@@ -1,9 +1,9 @@
-import type { FabricCircle } from '../../types/FabricTypes';
-import type { CircleNode } from '../../scene/nodes/CircleNode';
-import { createCircleNode } from '../../scene/nodes/CircleNode';
-import { TransformConverter } from '../TransformConverter';
-import { normalizeColor } from '../../utils/ColorParser';
-import { logger } from '../../utils/Logger';
+import type {FabricCircle} from '../../types/FabricTypes';
+import type {CircleNode} from '../../scene/nodes/CircleNode';
+import {createCircleNode} from '../../scene/nodes/CircleNode';
+import {TransformConverter} from '../TransformConverter';
+import {normalizeColor} from '../../utils/ColorParser';
+import {logger} from '../../utils/Logger';
 
 /**
  * Fabric Circle 对象解析器
@@ -44,11 +44,11 @@ export class CircleParser {
         }
       );
 
-      logger.debug('Circle 解析成功', { id: node.id, radius: node.radius });
+      logger.debug('Circle 解析成功', {id: node.id, radius: node.radius});
 
       return node;
     } catch (error) {
-      logger.warn('Circle 解析失败', { object: obj, error });
+      logger.warn('Circle 解析失败', {object: obj, error});
       return null;
     }
   }

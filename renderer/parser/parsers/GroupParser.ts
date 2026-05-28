@@ -1,10 +1,10 @@
-import type { FabricGroup } from '../../types/FabricTypes';
-import type { GroupNode } from '../../scene/nodes/GroupNode';
-import type { SceneNode } from '../../scene/SceneNode';
-import { createGroupNode } from '../../scene/nodes/GroupNode';
-import { TransformConverter } from '../TransformConverter';
-import { FabricParser } from '../FabricParser';
-import { logger } from '../../utils/Logger';
+import type {FabricGroup} from '../../types/FabricTypes';
+import type {GroupNode} from '../../scene/nodes/GroupNode';
+import {createGroupNode} from '../../scene/nodes/GroupNode';
+import type {SceneNode} from '../../scene/SceneNode';
+import {TransformConverter} from '../TransformConverter';
+import {FabricParser} from '../FabricParser';
+import {logger} from '../../utils/Logger';
 
 /**
  * Fabric Group 对象解析器
@@ -28,12 +28,12 @@ export class GroupParser {
           // 这里 TransformConverter.convertGroupChild 已经处理了相对坐标
           children.push(childNode);
         } else {
-          logger.warn('Group 子节点解析失败，跳过', { type: childObj.type });
+          logger.warn('Group 子节点解析失败，跳过', {type: childObj.type});
         }
       }
 
       if (children.length === 0) {
-        logger.warn('Group 没有有效的子节点', { id: obj.id });
+        logger.warn('Group 没有有效的子节点', {id: obj.id});
       }
 
       // 创建节点
@@ -53,11 +53,11 @@ export class GroupParser {
         }
       );
 
-      logger.debug('Group 解析成功', { id: node.id, childrenCount: children.length });
+      logger.debug('Group 解析成功', {id: node.id, childrenCount: children.length});
 
       return node;
     } catch (error) {
-      logger.warn('Group 解析失败', { object: obj, error });
+      logger.warn('Group 解析失败', {object: obj, error});
       return null;
     }
   }
