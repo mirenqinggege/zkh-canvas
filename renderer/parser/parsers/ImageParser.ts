@@ -1,5 +1,5 @@
-import type {FabricImage} from '../../types/FabricTypes';
-import type {ImageNode} from '../../scene/nodes/ImageNode';
+import type {FabricImage, FabricClipPath} from '../../types/FabricTypes';
+import type {ImageNode, ClipInfo} from '../../scene/nodes/ImageNode';
 import {createImageNode} from '../../scene/nodes/ImageNode';
 import {TransformConverter} from '../TransformConverter';
 import {logger} from '../../utils/Logger';
@@ -17,13 +17,15 @@ export class ImageParser {
       const transform = TransformConverter.convert(obj);
 
       // 图片源地址
-      // Fabric Image 的 src 可能在不同位置
       const src = this.extractImageSrc(obj);
 
       if (!src) {
         logger.warn('Image 缺少 src', {object: obj});
         return null;
       }
+
+      // 解析裁剪信息
+      const clip = this.parseClipPath(obj.clipPath, obj.width, obj.height);
 
       // 创建节点
       const node = createImageNode(
@@ -39,10 +41,11 @@ export class ImageParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          clip,
         }
       );
 
-      logger.debug('Image 解析成功', {id: node.id, src: node.src});
+      logger.debug('Image 解析成功', {id: node.id, src: node.src, clip: node.clip});
 
       return node;
     } catch (error) {
@@ -53,15 +56,36 @@ export class ImageParser {
 
   /**
    * 提取图片源地址
-   * Fabric Image 的 src 来源可能多样
    */
   private static extractImageSrc(obj: FabricImage): string | null {
-    // 直接 src 属性
     if (obj.src) return obj.src;
-
-    // 其他可能的属性（需要根据实际情况扩展）
-    // Fabric.js 的 _src、srcFromAttribute 等
-
     return null;
+  }
+
+  /**
+   * 解析裁剪路径
+   */
+  private static parseClipPath(
+    clipPath: FabricClipPath | undefined,
+    nodeWidth: number,
+    nodeHeight: number
+  ): ClipInfo | undefined {
+    if (!clipPath) return undefined;
+
+    if (clipPath.type === 'circle') {
+      // 有 radius 用 radius，没有则自动计算
+      const radius = clipPath.radius ?? Math.min(nodeWidth, nodeHeight) / 2;
+      return {type: 'circle', radius};
+    }
+
+    if (clipPath.type === 'rect') {
+      return {
+        type: 'rect',
+        rx: clipPath.rx ?? 0,
+        ry: clipPath.ry ?? 0,
+      };
+    }
+
+    return undefined;
   }
 }

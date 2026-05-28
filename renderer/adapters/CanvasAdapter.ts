@@ -105,6 +105,18 @@ export interface CanvasAdapter {
    */
   strokeRoundRect(x: number, y: number, w: number, h: number, rx: number, ry: number): void;
 
+  // ============ 裁剪路径 ============
+
+  /**
+   * 创建圆形裁剪路径
+   */
+  clipCircle(cx: number, cy: number, radius: number): void;
+
+  /**
+   * 创建圆角矩形裁剪路径
+   */
+  clipRoundRect(x: number, y: number, w: number, h: number, rx: number, ry: number): void;
+
   // ============ 文本绘制 ============
 
   /**

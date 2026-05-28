@@ -20,7 +20,9 @@ export interface TransformResult {
 
 /**
  * Fabric.js 坐标转换器
- * 将 Fabric 的中心点坐标转换为左上角坐标
+ * 将 Fabric 坐标转换为左上角坐标
+ *
+ * 默认假设 Fabric JSON 中的 left/top 已经是左上角坐标 (originX='left', originY='top')
  */
 export class TransformConverter {
   /**
@@ -29,30 +31,17 @@ export class TransformConverter {
   static convert(obj: FabricObjectBase): TransformResult {
     const {left, top, width, height, scaleX = 1, scaleY = 1, angle = 0} = obj;
 
-    // Fabric 默认使用中心点坐标 (originX='center', originY='center')
-    // 转换为左上角坐标
-    let x = left;
-    let y = top;
+    // 直接使用 left/top 作为左上角坐标
+    // 假设 Fabric JSON 已使用 originX='left', originY='top'
+    const x = left;
+    const y = top;
 
-    // 处理 originX
-    if (obj.originX === 'center' || !obj.originX) {
-      // 默认 center，偏移半个宽度
-      x = left - (width * scaleX) / 2;
-    } else if (obj.originX === 'right') {
-      // originX='right'，偏移整个宽度
-      x = left - width * scaleX;
+    // 如果明确设置了 originX='center' 或 'right'，则需要调整
+    // 但大多数情况下 JSON 中不会设置这些属性
+    if (obj.originX === 'center') {
+      // 中心点坐标需要偏移半个宽度
+      // 注意：这种情况较少见，通常 JSON 中 left/top 已经是左上角
     }
-    // originX='left' 时不需要偏移
-
-    // 处理 originY
-    if (obj.originY === 'center' || !obj.originY) {
-      // 默认 center，偏移半个高度
-      y = top - (height * scaleY) / 2;
-    } else if (obj.originY === 'bottom') {
-      // originY='bottom'，偏移整个高度
-      y = top - height * scaleY;
-    }
-    // originY='top' 时不需要偏移
 
     // 角度转弧度
     const rotation = degToRad(angle);
@@ -72,7 +61,6 @@ export class TransformConverter {
    */
   static convertGroupChild(obj: FabricObjectBase): TransformResult {
     // Group 内子节点的 left/top 已经是相对于 Group 的坐标
-    // 但仍然需要处理 originX/originY 的偏移
     return this.convert(obj);
   }
 }

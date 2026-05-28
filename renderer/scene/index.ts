@@ -10,7 +10,7 @@ export {createCircleNode} from './nodes/CircleNode';
 export type {TextNode, TextAlign} from './nodes/TextNode';
 export {createTextNode} from './nodes/TextNode';
 
-export type {ImageNode, ImageHandle} from './nodes/ImageNode';
+export type {ImageNode, ImageHandle, ClipInfo} from './nodes/ImageNode';
 export {createImageNode} from './nodes/ImageNode';
 
 export type {GroupNode} from './nodes/GroupNode';

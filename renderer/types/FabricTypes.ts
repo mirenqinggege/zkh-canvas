@@ -3,11 +3,23 @@
  */
 
 /**
+ * 裁剪路径对象
+ */
+export interface FabricClipPath {
+  type: 'circle' | 'rect';
+  radius?: number;
+  rx?: number;
+  ry?: number;
+  width?: number;
+  height?: number;
+}
+
+/**
  * Fabric 对象基础属性
  */
 export interface FabricObjectBase {
   type: string;
-  version: string;
+  version?: string;
 
   // 位置（Fabric 使用中心点坐标）
   left: number;
@@ -30,6 +42,9 @@ export interface FabricObjectBase {
   strokeWidth?: number;
   opacity?: number;
   visible?: boolean;
+
+  // 裁剪路径
+  clipPath?: FabricClipPath;
 
   // 唯一标识
   id?: string;

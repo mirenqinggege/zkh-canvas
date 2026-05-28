@@ -192,6 +192,21 @@ export class H5Adapter implements CanvasAdapter {
     ctx.closePath();
   }
 
+  // ============ 裁剪路径 ============
+
+  clipCircle(cx: number, cy: number, radius: number): void {
+    this.ensureContext();
+    this.ctx!.beginPath();
+    this.ctx!.arc(cx, cy, radius, 0, Math.PI * 2);
+    this.ctx!.clip();
+  }
+
+  clipRoundRect(x: number, y: number, w: number, h: number, rx: number, ry: number): void {
+    this.ensureContext();
+    this.drawRoundRectPath(x, y, w, h, rx, ry);
+    this.ctx!.clip();
+  }
+
   // ============ 文本绘制 ============
 
   setFont(options: FontOptions): void {

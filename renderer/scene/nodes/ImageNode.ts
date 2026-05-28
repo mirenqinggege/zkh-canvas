@@ -6,6 +6,16 @@ import type {SceneNode} from '../SceneNode';
 export type ImageHandle = unknown;
 
 /**
+ * 裁剪信息
+ */
+export interface ClipInfo {
+  type: 'circle' | 'rect';
+  radius?: number;
+  rx?: number;
+  ry?: number;
+}
+
+/**
  * 图片节点
  */
 export interface ImageNode extends SceneNode {
@@ -16,6 +26,9 @@ export interface ImageNode extends SceneNode {
 
   /** 加载后的图片对象（预加载后填充） */
   imageHandle?: ImageHandle;
+
+  /** 裁剪信息 */
+  clip?: ClipInfo;
 }
 
 /**
@@ -34,6 +47,7 @@ export function createImageNode(
     rotation?: number;
     scaleX?: number;
     scaleY?: number;
+    clip?: ClipInfo;
   }
 ): ImageNode {
   return {
@@ -52,5 +66,6 @@ export function createImageNode(
     rotation: options?.rotation ?? 0,
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
+    clip: options?.clip,
   };
 }
