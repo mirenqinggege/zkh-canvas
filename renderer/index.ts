@@ -4,6 +4,7 @@ export type {CanvasEngineConfig} from './engine/CanvasEngine';
 
 // 解析器
 export {FabricParser} from './parser/FabricParser';
+export {CardParser} from './parser/CardParser';
 export {TransformConverter} from './parser/TransformConverter';
 
 // 场景图
@@ -37,6 +38,10 @@ export type {
   FabricExportJSON, FabricObject, FabricRect, FabricCircle, FabricText, FabricImage, FabricGroup
 } from './types/FabricTypes';
 export type {RenderResult, ImageLoadError, ImageLoadResult} from './types/RenderResult';
+export type {
+  CardTemplateJSON, CardSize, CardBackground, CardElement,
+  AvatarElement, TextFieldElement, ImageElement, RectElement
+} from './types/CardTypes';
 export {SUPPORTED_NODE_TYPES, isSupportedNodeType} from './types/NodeType';
 
 // 工具函数
