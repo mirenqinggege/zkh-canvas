@@ -27,6 +27,7 @@ export type {NodeRenderer} from './renderer/NodeRenderer';
 // 适配器
 export type {CanvasAdapter} from './adapters/CanvasAdapter';
 export {WechatAdapter} from './adapters/WechatAdapter';
+export {H5Adapter} from './adapters/H5Adapter';
 export type {ImageHandle} from './adapters/types/ImageHandle';
 export type {FontOptions} from './adapters/types/FontOptions';
 

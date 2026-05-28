@@ -4,7 +4,7 @@
 
 ## 特性
 
-- **跨端渲染** - 支持微信小程序、H5、App 等平台
+- **跨端渲染** - 支持微信小程序、H5/浏览器等平台
 - **Fabric.js 兼容** - 解析 Fabric.js 5.x 导出的 JSON 结构
 - **平台隔离** - 所有平台差异通过 Adapter 层抽象
 - **高清适配** - 自动检测 DPR 并应用，确保清晰渲染
@@ -108,6 +108,66 @@ onMounted(async () => {
 </script>
 ```
 
+### H5/浏览器
+
+```html
+<canvas id="fabricCanvas" width="800" height="600"></canvas>
+
+<script type="module">
+import { CanvasEngine, H5Adapter } from 'zkh-canvas-renderer';
+
+// 通过 Canvas ID 创建适配器
+const adapter = H5Adapter.fromId('fabricCanvas');
+
+// 或直接传入 Canvas 元素
+// const canvas = document.getElementById('fabricCanvas');
+// const adapter = new H5Adapter(canvas);
+
+// 创建引擎
+const engine = new CanvasEngine(adapter);
+
+// 初始化
+await engine.initialize();
+
+// 加载 Fabric JSON
+const fabricJSON = {
+  version: '5.0.0',
+  objects: [
+    {
+      type: 'rect',
+      left: 100,
+      top: 100,
+      width: 200,
+      height: 150,
+      fill: '#ff5722',
+      rx: 10,
+      ry: 10
+    },
+    {
+      type: 'circle',
+      left: 400,
+      top: 300,
+      radius: 80,
+      fill: '#4caf50'
+    },
+    {
+      type: 'text',
+      left: 50,
+      top: 50,
+      text: 'Hello H5 Canvas',
+      fontSize: 32,
+      fontFamily: 'Arial',
+      fill: '#333333'
+    }
+  ]
+};
+
+// 渲染
+const result = await engine.render(fabricJSON);
+console.log('渲染完成', result);
+</script>
+```
+
 ## 支持的对象类型
 
 | 类型 | 说明 |
@@ -140,10 +200,24 @@ engine.destroy();
 engine.resize(width, height);
 ```
 
-### WechatAdapter
+### WechatAdapter（微信小程序）
 
 ```typescript
+// 通过 Canvas ID 创建
 const adapter = new WechatAdapter('canvasId');
+await adapter.initialize();
+```
+
+### H5Adapter（浏览器）
+
+```typescript
+// 通过 Canvas ID 创建
+const adapter = H5Adapter.fromId('canvasId');
+
+// 或直接传入 Canvas 元素
+const canvas = document.getElementById('canvasId');
+const adapter = new H5Adapter(canvas);
+
 await adapter.initialize();
 ```
 
@@ -172,6 +246,8 @@ renderer/
 ├── renderer/        # 渲染器
 │   └── renderers/   # 各类型渲染器
 ├── adapters/        # 平台适配器
+│   ├── WechatAdapter.ts  # 微信小程序
+│   ├── H5Adapter.ts      # H5/浏览器
 │   └── types/       # 适配器类型定义
 ├── engine/          # 引擎入口
 ├── utils/           # 工具函数
@@ -191,18 +267,22 @@ renderer/
 实现 `CanvasAdapter` 接口即可支持新平台：
 
 ```typescript
-class H5Adapter implements CanvasAdapter {
+class CustomAdapter implements CanvasAdapter {
   async initialize() { /* ... */ }
   save() { /* ... */ }
   restore() { /* ... */ }
+  translate(x, y) { /* ... */ }
+  rotate(rad) { /* ... */ }
+  scale(x, y) { /* ... */ }
   // ... 实现所有接口方法
 }
 ```
 
 ## 后续规划
 
-- [ ] H5Adapter 实现
-- [ ] AppAdapter 实现
+- [x] WechatAdapter 实现
+- [x] H5Adapter 实现
+- [ ] AppAdapter 实现（uni-app nvue）
 - [ ] hitTest 命中检测
 - [ ] selection/drag/resize 交互
 - [ ] clipPath/path 绘制
