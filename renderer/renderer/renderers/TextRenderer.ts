@@ -7,13 +7,14 @@ import type {NodeRenderer} from '../NodeRenderer';
  */
 export class TextRenderer implements NodeRenderer<TextNode> {
   render(node: TextNode, adapter: CanvasAdapter): void {
-    const {text, fontSize, fontFamily, fontWeight, textAlign, fill, stroke, strokeWidth} = node;
+    const {text, fontSize, fontFamily, fontWeight, fontStyle, textAlign, fill, stroke, strokeWidth} = node;
 
     // 设置字体
     adapter.setFont({
       fontSize,
       fontFamily,
       fontWeight,
+      fontStyle,
       textAlign,
     });
 

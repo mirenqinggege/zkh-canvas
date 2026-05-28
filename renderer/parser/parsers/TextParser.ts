@@ -1,5 +1,6 @@
 import type {FabricText} from '../../types/FabricTypes';
 import type {TextAlign, TextNode} from '../../scene/nodes/TextNode';
+import type {FontStyle} from '../../adapters/types/FontOptions';
 import {createTextNode} from '../../scene/nodes/TextNode';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
@@ -27,6 +28,9 @@ export class TextParser {
 
       const textAlign = textAlignMap[obj.textAlign || 'left'];
 
+      // 字体样式
+      const fontStyle: FontStyle = obj.fontStyle || 'normal';
+
       // 创建节点
       const node = createTextNode(
         obj.id || `text-${Date.now()}`,
@@ -39,6 +43,7 @@ export class TextParser {
           fontSize: obj.fontSize || 16,
           fontFamily: obj.fontFamily || 'sans-serif',
           fontWeight: obj.fontWeight || 'normal',
+          fontStyle,
           textAlign,
           fill: normalizeColor(obj.fill) || '#000000',
           stroke: normalizeColor(obj.stroke),

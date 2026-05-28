@@ -61,6 +61,7 @@ export interface FabricText extends FabricObjectBase {
   fontSize?: number;
   fontFamily?: string;
   fontWeight?: string | number;
+  fontStyle?: 'normal' | 'italic' | 'oblique';
   textAlign?: 'left' | 'center' | 'right' | 'justify';
   lineHeight?: number;
 }

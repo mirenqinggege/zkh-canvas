@@ -1,4 +1,5 @@
 import type {SceneNode} from '../SceneNode';
+import type {FontStyle} from '../../adapters/types/FontOptions';
 
 /**
  * 文本对齐方式
@@ -23,6 +24,9 @@ export interface TextNode extends SceneNode {
   /** 字体粗细 */
   fontWeight: string | number;
 
+  /** 字体样式 */
+  fontStyle: FontStyle;
+
   /** 文本对齐 */
   textAlign: TextAlign;
 }
@@ -41,6 +45,7 @@ export function createTextNode(
     fontSize?: number;
     fontFamily?: string;
     fontWeight?: string | number;
+    fontStyle?: FontStyle;
     textAlign?: TextAlign;
     fill?: string | null;
     stroke?: string | null;
@@ -63,6 +68,7 @@ export function createTextNode(
     fontSize: options?.fontSize ?? 16,
     fontFamily: options?.fontFamily ?? 'sans-serif',
     fontWeight: options?.fontWeight ?? 'normal',
+    fontStyle: options?.fontStyle ?? 'normal',
     textAlign: options?.textAlign ?? 'left',
     fill: options?.fill ?? '#000000',
     stroke: options?.stroke ?? null,
