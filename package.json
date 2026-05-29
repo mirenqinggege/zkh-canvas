@@ -1,6 +1,6 @@
 {
   "name": "zkh-canvas-renderer",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "uni-app 跨端 Canvas 渲染引擎，解析 Fabric.js JSON 并在各平台绘制",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
