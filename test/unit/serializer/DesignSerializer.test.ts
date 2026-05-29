@@ -4,6 +4,8 @@ import { createRectNode } from '../../../renderer/scene/nodes/RectNode';
 import { createCircleNode } from '../../../renderer/scene/nodes/CircleNode';
 import { createTextNode } from '../../../renderer/scene/nodes/TextNode';
 import { createImageNode } from '../../../renderer/scene/nodes/ImageNode';
+import { createGroupNode } from '../../../renderer/scene/nodes/GroupNode';
+import type { GroupNode } from '../../../renderer/scene/nodes/GroupNode';
 import { SceneGraph } from '../../../renderer/scene/SceneGraph';
 
 describe('DesignSerializer', () => {
@@ -181,6 +183,44 @@ describe('DesignSerializer', () => {
       expect(restored.src).toBe('https://example.com/img.png');
       expect(restored.fillMode).toBe('cover');
       expect(restored.clip).toEqual({ type: 'circle', radius: 50 });
+    });
+  });
+
+  describe('Group round-trip', () => {
+    it('空 Group serialize → parse 往返一致', () => {
+      const original = createGroupNode('g1', 0, 0, 300, 200, []);
+      const json = (serializer as any).serializeGroup(original);
+      expect(json.children).toEqual([]);
+
+      const restored = (serializer as any).parseGroup(json);
+      expect(restored.children).toEqual([]);
+    });
+
+    it('嵌套 Group serialize → parse 往返一致', () => {
+      const childRect = createRectNode('r1', 10, 10, 100, 80, { fill: '#ff0000' });
+      const childCircle = createCircleNode('c1', 0, 0, 30, { fill: '#00ff00' });
+      const group = createGroupNode('g1', 0, 0, 300, 200, [childRect, childCircle]);
+      const parentRect = createRectNode('r2', 50, 50, 50, 50);
+      const parentGroup = createGroupNode('g2', 0, 0, 400, 300, [group, parentRect]);
+
+      const json = (serializer as any).serializeGroup(parentGroup);
+      expect(json.children.length).toBe(2);
+      expect(json.children[0].type).toBe('group');
+      expect((json.children[0] as any).children.length).toBe(2);
+      expect((json.children[0] as any).children[0].type).toBe('rect');
+
+      const restored = (serializer as any).parseGroup(json);
+      expect(restored.children.length).toBe(2);
+      const restoredGroup = restored.children[0] as GroupNode;
+      expect(restoredGroup.children.length).toBe(2);
+      expect(restoredGroup.children[0].type).toBe('rect');
+      expect((restoredGroup.children[0] as any).fill).toBe('#ff0000');
+    });
+
+    it('serializeNode 分发到 group 方法', () => {
+      const group = createGroupNode('g1', 0, 0, 100, 100, []);
+      const json = (serializer as any).serializeNode(group);
+      expect(json.type).toBe('group');
     });
   });
 });

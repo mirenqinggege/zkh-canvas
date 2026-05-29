@@ -4,7 +4,7 @@ import { createRectNode, type RectNode } from '../scene/nodes/RectNode';
 import { createCircleNode, type CircleNode } from '../scene/nodes/CircleNode';
 import { createTextNode, type TextNode } from '../scene/nodes/TextNode';
 import { createImageNode, type ImageNode } from '../scene/nodes/ImageNode';
-import type { GroupNode } from '../scene/nodes/GroupNode';
+import { createGroupNode, type GroupNode } from '../scene/nodes/GroupNode';
 import type {
   DesignJSON,
   DesignNode,
@@ -215,7 +215,16 @@ export class DesignSerializer {
   }
 
   private parseGroup(node: DesignGroup): GroupNode {
-    this.applyBaseProps(node);
-    throw new Error('Not implemented');
+    const base = this.applyBaseProps(node);
+    const children = (node.children || [])
+      .map(child => this.parseNode(child))
+      .filter(Boolean) as SceneNode[];
+    return createGroupNode(base.id, base.x, base.y, base.width, base.height, children, {
+      opacity: base.opacity,
+      visible: base.visible,
+      rotation: base.rotation,
+      scaleX: base.scaleX,
+      scaleY: base.scaleY,
+    });
   }
 }
