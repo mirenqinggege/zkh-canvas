@@ -60,3 +60,6 @@ export {SelectionOverlayRenderer} from './interaction/SelectionOverlayRenderer';
 export type {InteractionController} from './interaction/InteractionController';
 export type {SelectionCallback, ModifyCallback} from './interaction/InteractionController';
 export type {ResizeHandle} from './interaction/controllers/ResizeController';
+
+// 序列化器
+export {DesignSerializer} from './serializer/DesignSerializer';

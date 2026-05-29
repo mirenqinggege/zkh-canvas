@@ -266,4 +266,21 @@ export class CanvasEngine {
   getSelectionController(): SelectionController | null {
     return this.selectionController;
   }
+
+  /**
+   * 获取当前场景图（用于序列化导出）
+   */
+  getSceneGraph(): SceneGraph | null {
+    return this.currentGraph;
+  }
+
+  /**
+   * 直接渲染已构建的 SceneGraph
+   * 适用于 DesignSerializer.parse() 恢复的场景
+   */
+  async renderGraph(graph: SceneGraph): Promise<void> {
+    this.currentGraph = graph;
+    await this.preloader.preload(graph);
+    this.renderer.render(graph, this.adapter);
+  }
 }
