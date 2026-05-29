@@ -268,6 +268,27 @@ export class CanvasEngine {
   }
 
   /**
+   * 获取拖拽控制器
+   */
+  getDragController(): DragController | null {
+    return this.dragController;
+  }
+
+  /**
+   * 获取缩放控制器
+   */
+  getResizeController(): ResizeController | null {
+    return this.resizeController;
+  }
+
+  /**
+   * 获取旋转控制器
+   */
+  getRotateController(): RotateController | null {
+    return this.rotateController;
+  }
+
+  /**
    * 获取当前场景图（用于序列化导出）
    */
   getSceneGraph(): SceneGraph | null {

@@ -1,13 +1,13 @@
-import type {FabricExportJSON, FabricObject} from '../types/FabricTypes';
-import type {SceneNode} from '../scene/SceneNode';
-import {SceneGraph} from '../scene/SceneGraph';
-import {isSupportedNodeType} from '../types/NodeType';
-import {RectParser} from './parsers/RectParser';
-import {CircleParser} from './parsers/CircleParser';
-import {TextParser} from './parsers/TextParser';
-import {ImageParser} from './parsers/ImageParser';
-import {GroupParser} from './parsers/GroupParser';
-import {logger} from '../utils/Logger';
+import type { FabricExportJSON, FabricObject } from "../types/FabricTypes";
+import type { SceneNode } from "../scene/SceneNode";
+import { SceneGraph } from "../scene/SceneGraph";
+import { isSupportedNodeType } from "../types/NodeType";
+import { RectParser } from "./parsers/RectParser";
+import { CircleParser } from "./parsers/CircleParser";
+import { TextParser } from "./parsers/TextParser";
+import { ImageParser } from "./parsers/ImageParser";
+import { GroupParser } from "./parsers/GroupParser";
+import { logger } from "../utils/Logger";
 
 /**
  * Fabric.js JSON 解析器
@@ -19,26 +19,26 @@ export class FabricParser {
   static parseObject(obj: FabricObject): SceneNode | null {
     // 检查是否为支持的类型
     if (!isSupportedNodeType(obj.type)) {
-      logger.warn(`不支持的对象类型: ${obj.type}`);
+      logger.warn(`不支持的对象: ${obj}`);
       return null;
     }
 
     // 根据类型分发解析
     switch (obj.type) {
-      case 'rect':
+      case "rect":
         return RectParser.parse(obj);
 
-      case 'circle':
+      case "circle":
         return CircleParser.parse(obj);
 
-      case 'text':
-      case 'textbox':
+      case "text":
+      case "textbox":
         return TextParser.parse(obj);
 
-      case 'image':
+      case "image":
         return ImageParser.parse(obj);
 
-      case 'group':
+      case "group":
         return GroupParser.parse(obj);
 
       default:
@@ -52,7 +52,7 @@ export class FabricParser {
    * 解析 Fabric.js 导出的 JSON
    */
   parse(json: FabricExportJSON): SceneGraph {
-    logger.info('开始解析 Fabric JSON', {objectsCount: json.objects.length});
+    logger.info("开始解析 Fabric JSON", { objectsCount: json.objects.length });
 
     const nodes: SceneNode[] = [];
 
@@ -61,11 +61,11 @@ export class FabricParser {
       if (node) {
         nodes.push(node);
       } else {
-        logger.warn(`不支持的对象类型或解析失败: ${obj.type}`, {object: obj});
+        logger.warn(`不支持的对象类型或解析失败: ${obj.type}`, { object: obj });
       }
     }
 
-    logger.info('Fabric JSON 解析完成', {nodesCount: nodes.length});
+    logger.info("Fabric JSON 解析完成", { nodesCount: nodes.length });
 
     return new SceneGraph(nodes);
   }
