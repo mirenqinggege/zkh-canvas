@@ -77,9 +77,11 @@ export class HitTestService {
    * 逆变换顺序：平移 → 旋转 → 缩放
    */
   private canvasToLocal(node: SceneNode, px: number, py: number): { x: number; y: number } {
-    // 逆平移
-    let lx = px - node.x;
-    let ly = py - node.y;
+    // 逆平移（从画布坐标到元素中心）
+    const cx = node.x + node.width / 2;
+    const cy = node.y + node.height / 2;
+    let lx = px - cx;
+    let ly = py - cy;
 
     // 逆旋转
     const cosA = Math.cos(-node.rotation);
@@ -87,9 +89,13 @@ export class HitTestService {
     const rlx = cosA * lx - sinA * ly;
     const rly = sinA * lx + cosA * ly;
 
+    // 平移回左上角
+    lx = rlx + node.width / 2;
+    ly = rly + node.height / 2;
+
     // 逆缩放
-    lx = rlx / (node.scaleX || 0.001);
-    ly = rly / (node.scaleY || 0.001);
+    lx = lx / (node.scaleX || 0.001);
+    ly = ly / (node.scaleY || 0.001);
 
     return {x: lx, y: ly};
   }

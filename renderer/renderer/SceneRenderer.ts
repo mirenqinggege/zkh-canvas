@@ -75,9 +75,10 @@ export class SceneRenderer {
     adapter.setGlobalAlpha(node.opacity);
 
     // 应用 Transform
-    // 顺序：translate → rotate → scale
-    adapter.translate(node.x, node.y);
+    // 旋转以元素中心为轴心，坐标仍为左上角
+    adapter.translate(node.x + node.width / 2, node.y + node.height / 2);
     adapter.rotate(node.rotation);
+    adapter.translate(-node.width / 2, -node.height / 2);
     adapter.scale(node.scaleX, node.scaleY);
 
     // 应用裁剪

@@ -23,6 +23,9 @@ export interface FontOptions {
 
   /** 文本对齐 */
   textAlign: TextAlign;
+
+  /** 文本基线 */
+  textBaseline?: 'top' | 'center' | 'bottom';
 }
 
 /**

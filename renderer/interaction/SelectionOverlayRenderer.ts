@@ -61,16 +61,18 @@ export class SelectionOverlayRenderer {
     const path = this.sceneGraph.findNodePath(node.id);
 
     if (path.length <= 1) {
-      // 顶层节点：直接应用自身变换
-      this.adapter.translate(node.x, node.y);
+      // 顶层节点：旋转以元素中心为轴心
+      this.adapter.translate(node.x + node.width / 2, node.y + node.height / 2);
       this.adapter.rotate(node.rotation);
+      this.adapter.translate(-node.width / 2, -node.height / 2);
       this.adapter.scale(node.scaleX, node.scaleY);
     } else {
       // 变换链：先外层 Group → 再到自身
       for (let i = 0; i < path.length; i++) {
         const n = path[i];
-        this.adapter.translate(n.x, n.y);
+        this.adapter.translate(n.x + n.width / 2, n.y + n.height / 2);
         this.adapter.rotate(n.rotation);
+        this.adapter.translate(-n.width / 2, -n.height / 2);
         this.adapter.scale(n.scaleX, n.scaleY);
       }
     }

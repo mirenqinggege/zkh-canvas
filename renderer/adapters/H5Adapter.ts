@@ -213,11 +213,16 @@ export class H5Adapter implements CanvasAdapter {
 
   // ============ 文本绘制 ============
 
+  measureText(text: string): { width: number } {
+    this.ensureContext();
+    return {width: this.ctx!.measureText(text).width};
+  }
+
   setFont(options: FontOptions): void {
     this.ensureContext();
     this.ctx!.font = fontOptionsToString(options);
-    // 设置文本基线为 top，便于定位
-    this.ctx!.textBaseline = 'top';
+    const baseline = options.textBaseline ?? 'top';
+    this.ctx!.textBaseline = baseline === 'center' ? 'middle' : baseline;
   }
 
   fillText(text: string, x: number, y: number): void {

@@ -29,6 +29,9 @@ export interface TextNode extends SceneNode {
 
   /** 文本对齐 */
   textAlign: TextAlign;
+
+  /** 文本基线 */
+  textBaseline: 'top' | 'center' | 'bottom';
 }
 
 /**
@@ -50,6 +53,7 @@ export function createTextNode(
     fill?: string | null;
     stroke?: string | null;
     strokeWidth?: number;
+    textBaseline?: 'top' | 'center' | 'bottom';
     opacity?: number;
     visible?: boolean;
     rotation?: number;
@@ -71,6 +75,7 @@ export function createTextNode(
     fontWeight: options?.fontWeight ?? 'normal',
     fontStyle: options?.fontStyle ?? 'normal',
     textAlign: options?.textAlign ?? 'left',
+    textBaseline: options?.textBaseline ?? 'top',
     fill: options?.fill ?? '#000000',
     stroke: options?.stroke ?? null,
     strokeWidth: options?.strokeWidth ?? 1,

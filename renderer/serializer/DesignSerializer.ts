@@ -114,6 +114,7 @@ export class DesignSerializer {
       fontWeight: node.fontWeight,
       fontStyle: node.fontStyle,
       textAlign: node.textAlign,
+      textBaseline: node.textBaseline,
     } as DesignText;
   }
 
@@ -193,6 +194,7 @@ export class DesignSerializer {
       fontWeight: node.fontWeight ?? 'normal',
       fontStyle: node.fontStyle ?? 'normal',
       textAlign: node.textAlign ?? 'left',
+      textBaseline: node.textBaseline ?? 'top',
       fill: base.fill,
       stroke: base.stroke,
       strokeWidth: base.strokeWidth,

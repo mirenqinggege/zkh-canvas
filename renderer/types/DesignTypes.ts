@@ -48,6 +48,7 @@ export interface DesignText extends DesignNodeBase {
   fontWeight: string | number;
   fontStyle: 'normal' | 'italic' | 'oblique';
   textAlign: 'left' | 'center' | 'right';
+  textBaseline?: 'top' | 'center' | 'bottom';
 }
 
 export interface DesignImage extends DesignNodeBase {

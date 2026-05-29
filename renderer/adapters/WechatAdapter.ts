@@ -186,9 +186,16 @@ export class WechatAdapter implements CanvasAdapter {
   setFont(options: FontOptions): void {
     this.ensureContext();
     this.ctx!.font = fontOptionsToString(options);
+    const baseline = options.textBaseline ?? 'top';
+    this.ctx!.textBaseline = baseline === 'center' ? 'middle' : baseline;
   }
 
   // ============ 文本绘制 ============
+
+  measureText(text: string): { width: number } {
+    this.ensureContext();
+    return {width: this.ctx!.measureText(text).width};
+  }
 
   fillText(text: string, x: number, y: number): void {
     this.ensureContext();

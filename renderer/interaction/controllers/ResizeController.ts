@@ -119,18 +119,18 @@ export class ResizeController implements InteractionController {
     ];
   }
 
-  /** 计算局部坐标 → 画布坐标 */
+  /** 计算局部坐标 → 画布坐标（以元素中心为旋转轴心） */
   private localToCanvas(node: SceneNode, lx: number, ly: number): { x: number; y: number } {
-    // 先缩放
-    let px = lx * node.scaleX;
-    let py = ly * node.scaleY;
-    // 再旋转
+    // 缩放后偏移至中心
+    let px = lx * node.scaleX - node.width / 2;
+    let py = ly * node.scaleY - node.height / 2;
+    // 旋转
     const cosA = Math.cos(node.rotation);
     const sinA = Math.sin(node.rotation);
     const rpx = cosA * px - sinA * py;
     const rpy = sinA * px + cosA * py;
-    // 再平移
-    return {x: rpx + node.x, y: rpy + node.y};
+    // 平移至画布坐标
+    return {x: rpx + node.x + node.width / 2, y: rpy + node.y + node.height / 2};
   }
 
   /** 根据控制柄类型和位移计算新的宽高位置 */

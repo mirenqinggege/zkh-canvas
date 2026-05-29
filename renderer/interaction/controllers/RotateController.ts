@@ -91,19 +91,20 @@ export class RotateController implements InteractionController {
 
   private getNodeCenter(node: SceneNode): { cx: number; cy: number } {
     return {
-      cx: node.x + (node.width * node.scaleX) / 2,
-      cy: node.y + (node.height * node.scaleY) / 2,
+      cx: node.x + node.width / 2,
+      cy: node.y + node.height / 2,
     };
   }
 
   private localToCanvas(node: SceneNode, lx: number, ly: number): { x: number; y: number } {
-    let px = lx * node.scaleX;
-    let py = ly * node.scaleY;
+    // 局部坐标 → 中心为轴心的画布坐标
+    let px = lx * node.scaleX - node.width / 2;
+    let py = ly * node.scaleY - node.height / 2;
     const cosA = Math.cos(node.rotation);
     const sinA = Math.sin(node.rotation);
     const rpx = cosA * px - sinA * py;
     const rpy = sinA * px + cosA * py;
-    return {x: rpx + node.x, y: rpy + node.y};
+    return {x: rpx + node.x + node.width / 2, y: rpy + node.y + node.height / 2};
   }
 
   onModify(cb: ModifyCallback): () => void {

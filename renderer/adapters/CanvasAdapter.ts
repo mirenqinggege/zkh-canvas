@@ -125,6 +125,11 @@ export interface CanvasAdapter {
   setFont(options: FontOptions): void;
 
   /**
+   * 测量文本宽度
+   */
+  measureText(text: string): { width: number };
+
+  /**
    * 填充文本
    */
   fillText(text: string, x: number, y: number): void;
