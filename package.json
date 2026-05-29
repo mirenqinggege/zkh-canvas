@@ -37,7 +37,8 @@
   "devDependencies": {
     "@types/uni-app": "^1.4.8",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "typescript": ">=4.5.0"
