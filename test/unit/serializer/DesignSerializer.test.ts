@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { DesignSerializer } from '../../../renderer/serializer/DesignSerializer';
 import { createRectNode } from '../../../renderer/scene/nodes/RectNode';
 import { createCircleNode } from '../../../renderer/scene/nodes/CircleNode';
+import { createTextNode } from '../../../renderer/scene/nodes/TextNode';
+import { createImageNode } from '../../../renderer/scene/nodes/ImageNode';
 import { SceneGraph } from '../../../renderer/scene/SceneGraph';
 
 describe('DesignSerializer', () => {
@@ -133,6 +135,52 @@ describe('DesignSerializer', () => {
       expect((restored as any).radius).toBe(50);
       expect(restored!.rotation).toBe(0.3);
       expect(restored!.scaleX).toBe(1.2);
+    });
+  });
+
+  describe('Text round-trip', () => {
+    it('文本 serialize → parse 往返一致', () => {
+      const original = createTextNode('t1', 10, 10, 'Hello World', 200, 40, {
+        fontSize: 24, fontFamily: 'Arial', fontWeight: 'bold',
+        fontStyle: 'italic', textAlign: 'center',
+      });
+      const json = (serializer as any).serializeText(original);
+      expect(json.text).toBe('Hello World');
+      expect(json.fontSize).toBe(24);
+      expect(json.fontFamily).toBe('Arial');
+      expect(json.fontStyle).toBe('italic');
+
+      const restored = (serializer as any).parseText(json);
+      expect(restored.type).toBe('text');
+      expect(restored.text).toBe('Hello World');
+      expect(restored.fontSize).toBe(24);
+      expect(restored.fontWeight).toBe('bold');
+      expect(restored.textAlign).toBe('center');
+    });
+
+    it('textbox 类型序列化为 text', () => {
+      const original = createTextNode('tb1', 0, 0, 'textbox demo', 200, 50);
+      const textboxNode = { ...original, type: 'textbox' as const };
+      const json = (serializer as any).serializeNode(textboxNode);
+      expect(json.type).toBe('text');
+    });
+  });
+
+  describe('Image round-trip', () => {
+    it('图片 serialize → parse 往返一致', () => {
+      const original = createImageNode('i1', 0, 0, 200, 150, 'https://example.com/img.png', {
+        fillMode: 'cover',
+        clip: { type: 'circle', radius: 50 },
+      });
+      const json = (serializer as any).serializeImage(original);
+      expect(json.src).toBe('https://example.com/img.png');
+      expect(json.fillMode).toBe('cover');
+      expect(json.clip).toEqual({ type: 'circle', radius: 50 });
+
+      const restored = (serializer as any).parseImage(json);
+      expect(restored.src).toBe('https://example.com/img.png');
+      expect(restored.fillMode).toBe('cover');
+      expect(restored.clip).toEqual({ type: 'circle', radius: 50 });
     });
   });
 });

@@ -2,8 +2,8 @@ import type { SceneNode } from '../scene/SceneNode';
 import { SceneGraph } from '../scene/SceneGraph';
 import { createRectNode, type RectNode } from '../scene/nodes/RectNode';
 import { createCircleNode, type CircleNode } from '../scene/nodes/CircleNode';
-import type { TextNode } from '../scene/nodes/TextNode';
-import type { ImageNode } from '../scene/nodes/ImageNode';
+import { createTextNode, type TextNode } from '../scene/nodes/TextNode';
+import { createImageNode, type ImageNode } from '../scene/nodes/ImageNode';
 import type { GroupNode } from '../scene/nodes/GroupNode';
 import type {
   DesignJSON,
@@ -183,13 +183,35 @@ export class DesignSerializer {
   }
 
   private parseText(node: DesignText): TextNode {
-    this.applyBaseProps(node);
-    throw new Error('Not implemented');
+    const base = this.applyBaseProps(node);
+    return createTextNode(base.id, base.x, base.y, node.text, base.width, base.height, {
+      fontSize: node.fontSize ?? 16,
+      fontFamily: node.fontFamily ?? 'sans-serif',
+      fontWeight: node.fontWeight ?? 'normal',
+      fontStyle: node.fontStyle ?? 'normal',
+      textAlign: node.textAlign ?? 'left',
+      fill: base.fill,
+      stroke: base.stroke,
+      strokeWidth: base.strokeWidth,
+      opacity: base.opacity,
+      visible: base.visible,
+      rotation: base.rotation,
+      scaleX: base.scaleX,
+      scaleY: base.scaleY,
+    });
   }
 
   private parseImage(node: DesignImage): ImageNode {
-    this.applyBaseProps(node);
-    throw new Error('Not implemented');
+    const base = this.applyBaseProps(node);
+    return createImageNode(base.id, base.x, base.y, base.width, base.height, node.src, {
+      fillMode: node.fillMode,
+      clip: node.clip,
+      opacity: base.opacity,
+      visible: base.visible,
+      rotation: base.rotation,
+      scaleX: base.scaleX,
+      scaleY: base.scaleY,
+    });
   }
 
   private parseGroup(node: DesignGroup): GroupNode {
