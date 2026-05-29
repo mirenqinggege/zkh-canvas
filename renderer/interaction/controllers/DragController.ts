@@ -6,11 +6,13 @@ import type {SelectionController} from './SelectionController';
 
 /**
  * 拖拽控制器
- * 处理已选中节点的拖拽移动
+ * 支持 click-and-drag 手势：点击任意节点即可拖拽，无需预先选中。
  *
  * 行为：
- * - onPointerDown: 只在点击到已选中的节点时激活，记录所有选中节点的起始位置
- * - onPointerMove: 计算位移并更新所有选中节点的 x/y
+ * - onPointerDown: 记录潜在拖拽目标（任意节点），不消费事件，
+ *   让 SelectionController 处理选中/取消选中
+ * - onPointerMove: 移动超过阈值(3px)后激活拖拽，
+ *   确保拖拽目标被选中，然后更新所有选中节点的位置
  * - onPointerUp: 结束拖拽
  * - cancel: 重置状态
  */
@@ -23,7 +25,17 @@ export class DragController implements InteractionController {
   private selectionController: SelectionController;
   private callbacks: ModifyCallback[] = [];
 
-  /** 拖拽起始信息 */
+  /** 拖拽激活阈值（像素） */
+  private dragThreshold = 3;
+
+  /** 潜在拖拽跟踪（用于 click-and-drag 手势） */
+  private pendingDrag: {
+    nodeId: string;
+    pointerStartX: number;
+    pointerStartY: number;
+  } | null = null;
+
+  /** 活跃拖拽 */
   private dragStart: {
     nodes: { id: string; startX: number; startY: number }[];
     startPointerX: number;
@@ -42,75 +54,88 @@ export class DragController implements InteractionController {
 
   /**
    * 处理 pointerdown
-   * 检测是否点击在已选中的节点上，如果是则激活拖拽
+   * 记录潜在拖拽目标，但不消费事件（让 SelectionController 处理选择）
    */
   onPointerDown(x: number, y: number, _nativeEvent: any): boolean {
-    if (this.active) return false;
-
     const hit = this.hitTestService.hitTest(this.sceneGraph, x, y);
-    if (!hit) return false;
-
-    // 只在点击到已选中的节点时激活
-    if (!this.selectionController.isSelected(hit.id)) return false;
-
-    // 记录所有选中节点的起始位置
-    const selectedNodes = this.selectionController.getSelectedNodes();
-    const nodes = selectedNodes.map(n => ({
-      id: n.id,
-      startX: n.x,
-      startY: n.y,
-    }));
-
-    this.dragStart = {
-      nodes,
-      startPointerX: x,
-      startPointerY: y,
-    };
-
-    this.active = true;
-    return true;
+    if (hit) {
+      this.pendingDrag = {
+        nodeId: hit.id,
+        pointerStartX: x,
+        pointerStartY: y,
+      };
+    }
+    return false; // 不消费，让 SelectionController 处理
   }
 
   /**
    * 处理 pointermove
-   * 拖拽过程中更新所有选中节点的位置
+   * - 有 pendingDrag：检查是否超过阈值，激活拖拽
+   * - 活跃拖拽中：更新所有选中节点位置
    */
   onPointerMove(x: number, y: number, _nativeEvent: any): void {
-    if (!this.active || !this.dragStart) return;
-
-    const dx = x - this.dragStart.startPointerX;
-    const dy = y - this.dragStart.startPointerY;
-
-    for (const nodeInfo of this.dragStart.nodes) {
-      const node = this.sceneGraph.getNodeById(nodeInfo.id);
-      if (!node) continue;
-
-      const newX = nodeInfo.startX + dx;
-      const newY = nodeInfo.startY + dy;
-
-      node.x = newX;
-      node.y = newY;
-
-      this.notifyModify(nodeInfo.id, {x: newX, y: newY});
+    if (this.dragStart) {
+      // 活跃拖拽：更新节点位置
+      const dx = x - this.dragStart.startPointerX;
+      const dy = y - this.dragStart.startPointerY;
+      for (const nodeInfo of this.dragStart.nodes) {
+        const node = this.sceneGraph.getNodeById(nodeInfo.id);
+        if (!node) continue;
+        node.x = nodeInfo.startX + dx;
+        node.y = nodeInfo.startY + dy;
+        this.notifyModify(nodeInfo.id, {});
+      }
+    } else if (this.pendingDrag) {
+      // 检查是否超过拖拽阈值 → 激活拖拽
+      const dx = Math.abs(x - this.pendingDrag.pointerStartX);
+      const dy = Math.abs(y - this.pendingDrag.pointerStartY);
+      if (dx > this.dragThreshold || dy > this.dragThreshold) {
+        this.activateDrag();
+      }
     }
   }
 
   /**
+   * 激活拖拽
+   */
+  private activateDrag(): void {
+    if (!this.pendingDrag) return;
+    this.active = true;
+
+    // 确保拖拽目标被选中（单选模式）
+    if (!this.selectionController.isSelected(this.pendingDrag.nodeId)) {
+      this.selectionController.selectSingle(this.pendingDrag.nodeId);
+    }
+
+    this.dragStart = {
+      nodes: this.selectionController.getSelectedNodes().map(n => ({
+        id: n.id,
+        startX: n.x,
+        startY: n.y,
+      })),
+      startPointerX: this.pendingDrag.pointerStartX,
+      startPointerY: this.pendingDrag.pointerStartY,
+    };
+    this.pendingDrag = null;
+  }
+
+  /**
    * 处理 pointerup
-   * 结束拖拽
+   * 结束拖拽，清理所有状态
    */
   onPointerUp(_x: number, _y: number, _nativeEvent: any): void {
     this.active = false;
     this.dragStart = null;
+    this.pendingDrag = null;
   }
 
   /**
    * 取消当前拖拽
-   * 重置状态
    */
   cancel(): void {
     this.active = false;
     this.dragStart = null;
+    this.pendingDrag = null;
   }
 
   // ============ 回调管理 ============

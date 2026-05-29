@@ -3,6 +3,7 @@ import type {ImageNode, ClipInfo} from '../../scene/nodes/ImageNode';
 import {createImageNode} from '../../scene/nodes/ImageNode';
 import {TransformConverter} from '../TransformConverter';
 import {logger} from '../../utils/Logger';
+import {generateNodeId} from './NodeIdGenerator';
 
 /**
  * Fabric Image 对象解析器
@@ -32,7 +33,7 @@ export class ImageParser {
 
       // 创建节点
       const node = createImageNode(
-        obj.id || `image-${Date.now()}`,
+        generateNodeId('image', obj.id),
         transform.x,
         transform.y,
         obj.width,

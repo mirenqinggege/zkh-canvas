@@ -222,6 +222,9 @@ export class CanvasEngine {
     this.resizeController.onModify(requestReRender);
     this.rotateController.onModify(requestReRender);
 
+    // 选中变化 → 触发重绘（显示/隐藏选中框和控制柄）
+    this.selectionController.onChange(() => this.reRender());
+
     this.eventManager.attach();
     logger.info('交互已启用');
   }

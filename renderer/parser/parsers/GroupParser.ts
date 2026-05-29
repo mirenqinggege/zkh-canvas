@@ -5,6 +5,7 @@ import type {SceneNode} from '../../scene/SceneNode';
 import {TransformConverter} from '../TransformConverter';
 import {FabricParser} from '../FabricParser';
 import {logger} from '../../utils/Logger';
+import {generateNodeId} from './NodeIdGenerator';
 
 /**
  * Fabric Group 对象解析器
@@ -38,7 +39,7 @@ export class GroupParser {
 
       // 创建节点
       const node = createGroupNode(
-        obj.id || `group-${Date.now()}`,
+        generateNodeId('group', obj.id),
         transform.x,
         transform.y,
         obj.width,

@@ -4,6 +4,7 @@ import {createCircleNode} from '../../scene/nodes/CircleNode';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
+import {generateNodeId} from './NodeIdGenerator';
 
 /**
  * Fabric Circle 对象解析器
@@ -28,7 +29,7 @@ export class CircleParser {
 
       // 创建节点
       const node = createCircleNode(
-        obj.id || `circle-${Date.now()}`,
+        generateNodeId('circle', obj.id),
         circleX,
         circleY,
         radius,

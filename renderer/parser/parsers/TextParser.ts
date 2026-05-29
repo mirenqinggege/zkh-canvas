@@ -5,6 +5,7 @@ import {createTextNode} from '../../scene/nodes/TextNode';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
+import {generateNodeId} from './NodeIdGenerator';
 
 /**
  * Fabric Text/Textbox 对象解析器
@@ -33,7 +34,7 @@ export class TextParser {
 
       // 创建节点
       const node = createTextNode(
-        obj.id || `text-${Date.now()}`,
+        generateNodeId('text', obj.id),
         transform.x,
         transform.y,
         obj.text,

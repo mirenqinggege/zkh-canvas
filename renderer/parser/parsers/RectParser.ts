@@ -4,6 +4,7 @@ import {createRectNode} from '../../scene/nodes/RectNode';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
+import {generateNodeId} from './NodeIdGenerator';
 
 /**
  * Fabric Rect 对象解析器
@@ -19,7 +20,7 @@ export class RectParser {
 
       // 创建节点
       const node = createRectNode(
-        obj.id || `rect-${Date.now()}`,
+        generateNodeId('rect', obj.id),
         transform.x,
         transform.y,
         obj.width,

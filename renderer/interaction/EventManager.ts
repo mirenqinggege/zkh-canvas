@@ -113,25 +113,21 @@ export class EventManager {
 
   /**
    * 分发 pointermove 事件
-   * 只分发到当前活跃的控制器
+   * 分发给所有控制器（含非活跃的），以便 DragController 检测拖拽起始阈值
    */
   dispatchPointerMove(x: number, y: number, nativeEvent: any): void {
     for (const ctrl of this.controllers) {
-      if (ctrl.active) {
-        ctrl.onPointerMove(x, y, nativeEvent);
-      }
+      ctrl.onPointerMove(x, y, nativeEvent);
     }
   }
 
   /**
    * 分发 pointerup 事件
-   * 只分发到当前活跃的控制器
+   * 分发给所有控制器（含非活跃的），确保所有控制器正确结束交互状态
    */
   dispatchPointerUp(x: number, y: number, nativeEvent: any): void {
     for (const ctrl of this.controllers) {
-      if (ctrl.active) {
-        ctrl.onPointerUp(x, y, nativeEvent);
-      }
+      ctrl.onPointerUp(x, y, nativeEvent);
     }
   }
 
