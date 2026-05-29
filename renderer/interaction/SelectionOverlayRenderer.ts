@@ -1,4 +1,5 @@
 import type {SceneNode} from '../scene/SceneNode';
+import type {SceneGraph} from '../scene/SceneGraph';
 import type {CanvasAdapter} from '../adapters/CanvasAdapter';
 import type {SelectionController} from './controllers/SelectionController';
 import {ResizeController} from './controllers/ResizeController';
@@ -13,6 +14,7 @@ export class SelectionOverlayRenderer {
   private selectionController: SelectionController;
   private resizeController?: ResizeController;
   private rotateController?: RotateController;
+  private sceneGraph: SceneGraph;
 
   /** 选中框颜色 */
   private selectionColor = '#1890ff';
@@ -22,11 +24,13 @@ export class SelectionOverlayRenderer {
   constructor(
     adapter: CanvasAdapter,
     selectionController: SelectionController,
+    sceneGraph: SceneGraph,
     resizeController?: ResizeController,
     rotateController?: RotateController
   ) {
     this.adapter = adapter;
     this.selectionController = selectionController;
+    this.sceneGraph = sceneGraph;
     this.resizeController = resizeController;
     this.rotateController = rotateController;
   }
@@ -49,13 +53,32 @@ export class SelectionOverlayRenderer {
     }
   }
 
+  /**
+   * 应用节点的完整变换链（含 Group 祖先）
+   * 确保 Group 内子节点的选中框绘制在正确位置
+   */
+  private applyFullTransform(node: SceneNode): void {
+    const path = this.sceneGraph.findNodePath(node.id);
+
+    if (path.length <= 1) {
+      // 顶层节点：直接应用自身变换
+      this.adapter.translate(node.x, node.y);
+      this.adapter.rotate(node.rotation);
+      this.adapter.scale(node.scaleX, node.scaleY);
+    } else {
+      // 变换链：先外层 Group → 再到自身
+      for (let i = 0; i < path.length; i++) {
+        const n = path[i];
+        this.adapter.translate(n.x, n.y);
+        this.adapter.rotate(n.rotation);
+        this.adapter.scale(n.scaleX, n.scaleY);
+      }
+    }
+  }
+
   private renderSelectionBox(node: SceneNode): void {
     this.adapter.save();
-
-    // 应用节点 transform
-    this.adapter.translate(node.x, node.y);
-    this.adapter.rotate(node.rotation);
-    this.adapter.scale(node.scaleX, node.scaleY);
+    this.applyFullTransform(node);
 
     // 选中框（实线轮廓，因 adapter 不支持虚线）
     this.adapter.setStrokeStyle(this.selectionColor);
@@ -67,10 +90,7 @@ export class SelectionOverlayRenderer {
 
   private renderResizeHandles(node: SceneNode): void {
     this.adapter.save();
-
-    this.adapter.translate(node.x, node.y);
-    this.adapter.rotate(node.rotation);
-    this.adapter.scale(node.scaleX, node.scaleY);
+    this.applyFullTransform(node);
 
     const handles: { x: number; y: number }[] = [
       {x: 0, y: 0},
@@ -86,7 +106,6 @@ export class SelectionOverlayRenderer {
     const half = this.handleSize / 2;
 
     for (const {x, y} of handles) {
-      // 白色填充 + 蓝色边框
       this.adapter.setFillStyle('#ffffff');
       this.adapter.setStrokeStyle(this.selectionColor);
       this.adapter.setLineWidth(1.5);
@@ -99,18 +118,13 @@ export class SelectionOverlayRenderer {
 
   private renderRotateHandle(node: SceneNode): void {
     this.adapter.save();
-
-    this.adapter.translate(node.x, node.y);
-    this.adapter.rotate(node.rotation);
-    this.adapter.scale(node.scaleX, node.scaleY);
+    this.applyFullTransform(node);
 
     const handleX = node.width / 2;
-    const handleY = -40; // 旋转手柄在选中框上方 40px
+    const handleY = -40;
     const radius = 6;
 
-    // 连接线：从选中框顶部中心到旋转手柄
-    // strokeRect(x, y, w, h) 绘制从 (x,y) 到 (x+w, y+h) 的矩形，
-    // 这里利用它画一条竖线：从 handle 下方到选中框顶部 (y=0)
+    // 连接线
     this.adapter.setStrokeStyle(this.selectionColor);
     this.adapter.setLineWidth(1);
     this.adapter.strokeRect(
@@ -120,7 +134,7 @@ export class SelectionOverlayRenderer {
       Math.abs(handleY) - radius
     );
 
-    // 旋转手柄方块（避免 scale 后 fillCircle 变成椭圆）
+    // 旋转手柄方块
     this.adapter.setFillStyle(this.selectionColor);
     this.adapter.fillRect(handleX - radius, handleY - radius, radius * 2, radius * 2);
 

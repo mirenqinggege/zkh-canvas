@@ -66,6 +66,40 @@ export class SceneGraph {
   }
 
   /**
+   * 查找目标节点的祖先链（从最外层父节点到目标节点自身）
+   * 用于选中框渲染时正确计算 Group 内子节点的画布坐标
+   *
+   * 例：Group 内嵌 Group 内的子节点 → [parentGroup, childGroup, targetNode]
+   * 顶层节点 → [targetNode]
+   */
+  findNodePath(id: string): SceneNode[] {
+    for (const node of this.nodes) {
+      const path = this.buildPath(node, id);
+      if (path.length > 0) return path;
+    }
+    return [];
+  }
+
+  /**
+   * 递归构建从当前节点到目标节点的路径
+   */
+  private buildPath(node: SceneNode, targetId: string): SceneNode[] {
+    if (node.id === targetId) {
+      return [node];
+    }
+    if (node.type === 'group') {
+      const group = node as import('./nodes/GroupNode').GroupNode;
+      for (const child of group.children) {
+        const subPath = this.buildPath(child, targetId);
+        if (subPath.length > 0) {
+          return [node, ...subPath];
+        }
+      }
+    }
+    return [];
+  }
+
+  /**
    * 获取节点数量
    */
   getNodeCount(): number {

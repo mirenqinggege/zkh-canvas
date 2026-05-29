@@ -58,7 +58,10 @@ export class HitTestService {
         return null;
       }
       // 子节点坐标相对于 Group，用 Group 局部坐标检测
-      return this.hitTestNodes(group.children, local.x, local.y);
+      const childHit = this.hitTestNodes(group.children, local.x, local.y);
+      if (childHit) return childHit;
+      // 点击在 Group 边界内但没命中具体子节点 → 返回 Group 自身
+      return group;
     }
 
     // 各形状检测

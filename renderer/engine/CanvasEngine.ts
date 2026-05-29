@@ -204,6 +204,7 @@ export class CanvasEngine {
     this.selectionOverlayRenderer = new SelectionOverlayRenderer(
       this.adapter,
       this.selectionController,
+      graph,
       this.resizeController,
       this.rotateController
     );
