@@ -1,10 +1,18 @@
 import type {FabricExportJSON, RenderResult, CardTemplateJSON} from '../types';
 import type {CanvasAdapter} from '../adapters/CanvasAdapter';
+import type {SceneGraph} from '../scene/SceneGraph';
 import {FabricParser} from '../parser/FabricParser';
 import {CardParser} from '../parser/CardParser';
 import {SceneRenderer} from '../renderer/SceneRenderer';
 import {ImagePreloader} from './ImagePreloader';
 import {logger} from '../utils/Logger';
+import {EventManager} from '../interaction/EventManager';
+import {HitTestService} from '../interaction/HitTestService';
+import {SelectionController} from '../interaction/controllers/SelectionController';
+import {DragController} from '../interaction/controllers/DragController';
+import {ResizeController} from '../interaction/controllers/ResizeController';
+import {RotateController} from '../interaction/controllers/RotateController';
+import {SelectionOverlayRenderer} from '../interaction/SelectionOverlayRenderer';
 
 /**
  * Canvas 渲染引擎配置
@@ -25,6 +33,18 @@ export class CanvasEngine {
   private renderer: SceneRenderer;
   private preloader: ImagePreloader;
   private config: CanvasEngineConfig;
+
+  // 交互系统属性
+  private eventManager: EventManager | null = null;
+  private hitTestService: HitTestService | null = null;
+  private selectionController: SelectionController | null = null;
+  private dragController: DragController | null = null;
+  private resizeController: ResizeController | null = null;
+  private rotateController: RotateController | null = null;
+  private selectionOverlayRenderer: SelectionOverlayRenderer | null = null;
+
+  /** 当前场景图（用于交互重绘） */
+  private currentGraph: SceneGraph | null = null;
 
   constructor(adapter: CanvasAdapter, config?: CanvasEngineConfig) {
     this.adapter = adapter;
@@ -63,6 +83,7 @@ export class CanvasEngine {
 
     // 1. 解析 JSON
     const graph = this.fabricParser.parse(json);
+    this.currentGraph = graph;
 
     // 2. 预加载图片
     const loadResult = await this.preloader.preload(graph);
@@ -96,6 +117,7 @@ export class CanvasEngine {
 
     // 1. 解析 JSON
     const graph = this.cardParser.parse(json);
+    this.currentGraph = graph;
 
     // 2. 预加载图片
     const loadResult = await this.preloader.preload(graph);
@@ -120,6 +142,9 @@ export class CanvasEngine {
    */
   destroy(): void {
     logger.info('销毁 CanvasEngine');
+    // 先清理事件系统
+    this.disableInteraction();
+    // 再销毁适配器
     this.adapter.destroy();
   }
 
@@ -156,5 +181,85 @@ export class CanvasEngine {
    */
   getCardParser(): CardParser {
     return this.cardParser;
+  }
+
+  // ============ 交互系统 ============
+
+  /**
+   * 启用交互（需在 render() 之后调用）
+   */
+  enableInteraction(): void {
+    if (!this.currentGraph) {
+      logger.warn('请先调用 render() 再启用交互');
+      return;
+    }
+
+    const graph = this.currentGraph;
+
+    this.hitTestService = new HitTestService();
+    this.selectionController = new SelectionController(this.hitTestService, graph);
+    this.dragController = new DragController(this.hitTestService, graph, this.selectionController);
+    this.resizeController = new ResizeController(graph, this.selectionController);
+    this.rotateController = new RotateController(graph, this.selectionController);
+    this.selectionOverlayRenderer = new SelectionOverlayRenderer(
+      this.adapter,
+      this.selectionController,
+      this.resizeController,
+      this.rotateController
+    );
+
+    this.eventManager = new EventManager(this.adapter, this.hitTestService, this.renderer);
+
+    // 注册控制器（优先级从高到低）
+    this.eventManager.addController(this.rotateController);
+    this.eventManager.addController(this.resizeController);
+    this.eventManager.addController(this.dragController);
+    this.eventManager.addController(this.selectionController);
+
+    // 修改回调 → 触发重绘
+    const requestReRender = () => this.reRender();
+    this.dragController.onModify(requestReRender);
+    this.resizeController.onModify(requestReRender);
+    this.rotateController.onModify(requestReRender);
+
+    this.eventManager.attach();
+    logger.info('交互已启用');
+  }
+
+  /**
+   * 禁用交互
+   */
+  disableInteraction(): void {
+    this.eventManager?.detach();
+    this.eventManager = null;
+    this.hitTestService = null;
+    this.selectionController = null;
+    this.dragController = null;
+    this.resizeController = null;
+    this.rotateController = null;
+    this.selectionOverlayRenderer = null;
+  }
+
+  /**
+   * 触发重绘（交互修改后调用）
+   */
+  private reRender(): void {
+    if (!this.currentGraph) return;
+    this.renderer.render(this.currentGraph, this.adapter);
+    this.selectionOverlayRenderer?.render();
+  }
+
+  /**
+   * 获取事件管理器
+   */
+  getEventManager(): EventManager | null {
+    return this.eventManager;
+  }
+
+  /**
+   * 获取选择控制器
+   */
+  getSelectionController(): SelectionController | null {
+    return this.selectionController;
   }
 }

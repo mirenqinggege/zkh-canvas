@@ -372,6 +372,34 @@ export class WechatAdapter implements CanvasAdapter {
       return 1;
     }
   }
+
+  // ============ 事件支持 ============
+
+  supportsEvents(): boolean {
+    return true;
+  }
+
+  addEventListener(_type: string, _handler: Function): () => void {
+    // 微信小程序中事件绑定通过 wxml 属性完成
+    // 此方法保留接口一致性，实际绑定由 EventManager 通过其他方式处理
+    return () => {};
+  }
+
+  async getBoundingClientRect(): Promise<{ left: number; top: number; width: number; height: number }> {
+    return new Promise((resolve) => {
+      uni.createSelectorQuery()
+        .select(`#${this.canvasId}`)
+        .boundingClientRect((rect: any) => {
+          resolve({
+            left: rect?.left ?? 0,
+            top: rect?.top ?? 0,
+            width: rect?.width ?? this.displayWidth,
+            height: rect?.height ?? this.displayHeight,
+          });
+        })
+        .exec();
+    });
+  }
 }
 
 // UniCanvas 类型已在 types/uni-canvas.d.ts 中定义

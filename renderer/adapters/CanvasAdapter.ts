@@ -186,4 +186,25 @@ export interface CanvasAdapter {
    * 清空 Canvas
    */
   clear(): void;
+
+  // ============ 事件支持 ============
+
+  /**
+   * 绑定事件监听
+   * @param type 事件类型 (如 'touchstart', 'mousedown')
+   * @param handler 事件处理函数
+   * @returns 解绑函数
+   */
+  addEventListener?(type: string, handler: Function): () => void;
+
+  /**
+   * 获取 Canvas 元素在页面中的位置
+   * 用于将原生事件坐标转换为 Canvas 显示坐标
+   */
+  getBoundingClientRect?(): Promise<{ left: number; top: number; width: number; height: number }>;
+
+  /**
+   * 判断适配器是否支持事件绑定
+   */
+  supportsEvents(): boolean;
 }

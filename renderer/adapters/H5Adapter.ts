@@ -365,4 +365,27 @@ export class H5Adapter implements CanvasAdapter {
   getContext(): CanvasRenderingContext2D | null {
     return this.ctx;
   }
+
+  // ============ 事件支持 ============
+
+  supportsEvents(): boolean {
+    return true;
+  }
+
+  addEventListener(type: string, handler: Function): () => void {
+    this.canvasElement.addEventListener(type, handler as EventListener);
+    return () => {
+      this.canvasElement.removeEventListener(type, handler as EventListener);
+    };
+  }
+
+  async getBoundingClientRect(): Promise<{ left: number; top: number; width: number; height: number }> {
+    const rect = this.canvasElement.getBoundingClientRect();
+    return {
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+  }
 }

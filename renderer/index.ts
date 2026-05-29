@@ -48,3 +48,15 @@ export {SUPPORTED_NODE_TYPES, isSupportedNodeType} from './types/NodeType';
 export {logger} from './utils/Logger';
 export {normalizeColor, isValidColor} from './utils/ColorParser';
 export {degToRad, radToDeg, clamp} from './utils/MathUtils';
+
+// 交互模块
+export {EventManager} from './interaction/EventManager';
+export {HitTestService} from './interaction/HitTestService';
+export {SelectionController} from './interaction/controllers/SelectionController';
+export {DragController} from './interaction/controllers/DragController';
+export {ResizeController} from './interaction/controllers/ResizeController';
+export {RotateController} from './interaction/controllers/RotateController';
+export {SelectionOverlayRenderer} from './interaction/SelectionOverlayRenderer';
+export type {InteractionController} from './interaction/InteractionController';
+export type {SelectionCallback, ModifyCallback} from './interaction/InteractionController';
+export type {ResizeHandle} from './interaction/controllers/ResizeController';
