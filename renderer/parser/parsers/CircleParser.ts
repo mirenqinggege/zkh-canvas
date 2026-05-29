@@ -23,7 +23,7 @@ export class CircleParser {
       const radius = obj.radius;
 
       // 解析裁剪信息
-      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath);
 
       // Circle 在 Fabric 中 left/top 是圆心坐标
       // 转换后 x/y 是圆的外接矩形左上角

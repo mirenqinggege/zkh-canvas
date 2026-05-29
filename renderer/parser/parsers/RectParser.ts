@@ -20,7 +20,7 @@ export class RectParser {
       const transform = TransformConverter.convert(obj);
 
       // 解析裁剪信息
-      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath);
 
       // 创建节点
       const node = createRectNode(

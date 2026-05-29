@@ -34,7 +34,7 @@ export class TextParser {
       const fontStyle: FontStyle = obj.fontStyle || 'normal';
 
       // 解析裁剪信息
-      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath);
 
       // 创建节点
       const node = createTextNode(

@@ -21,7 +21,7 @@ export class GroupParser {
       const transform = TransformConverter.convert(obj);
 
       // 解析裁剪信息
-      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath);
 
       // 解析子节点
       const children: SceneNode[] = [];

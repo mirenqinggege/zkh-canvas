@@ -114,7 +114,8 @@ export class SceneRenderer {
     if (clip.type === 'circle') {
       const cx = node.width / 2;
       const cy = node.height / 2;
-      adapter.clipCircle(cx, cy, clip.radius!);
+      const radius = clip.radius ?? Math.min(node.width, node.height) / 2;
+      adapter.clipCircle(cx, cy, radius);
     } else if (clip.type === 'rect') {
       adapter.clipRoundRect(0, 0, node.width, node.height, clip.rx ?? 0, clip.ry ?? 0);
     }

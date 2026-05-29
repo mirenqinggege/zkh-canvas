@@ -12,14 +12,15 @@ export interface ClipInfo {
  */
 export function parseClipPath(
   clipPath: FabricClipPath | undefined,
-  nodeWidth: number,
-  nodeHeight: number
 ): ClipInfo | undefined {
   if (!clipPath) return undefined;
 
   if (clipPath.type === 'circle') {
-    const radius = clipPath.radius ?? Math.min(nodeWidth, nodeHeight) / 2;
-    return {type: 'circle', radius};
+    // 不给 radius 就存 {type:'circle'}，渲染时从节点当前尺寸实时计算
+    if (clipPath.radius != null) {
+      return {type: 'circle', radius: clipPath.radius};
+    }
+    return {type: 'circle'};
   }
 
   if (clipPath.type === 'rect') {

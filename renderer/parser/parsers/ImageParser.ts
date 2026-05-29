@@ -27,7 +27,7 @@ export class ImageParser {
       }
 
       // 解析裁剪信息
-      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath);
 
       // 解析填充模式
       const fillMode: 'fill' | 'cover' | 'contain' = obj.fillMode || 'fill';
