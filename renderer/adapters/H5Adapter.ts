@@ -254,7 +254,8 @@ export class H5Adapter implements CanvasAdapter {
       };
 
       // 处理跨域图片
-      // 如果是跨域图片，可以设置 crossOrigin
+      // 设置 crossOrigin 避免 canvas 被污染导致 toDataURL 失败
+      img.crossOrigin = 'anonymous';
       img.src = src;
     });
   }
