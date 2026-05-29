@@ -74,6 +74,7 @@ export class DesignSerializer {
       strokeWidth: node.strokeWidth,
       opacity: node.opacity,
       visible: node.visible,
+      clip: node.clip,
     };
   }
 
@@ -92,6 +93,7 @@ export class DesignSerializer {
       strokeWidth: base.strokeWidth ?? 0,
       opacity: base.opacity ?? 1,
       visible: base.visible ?? true,
+      clip: base.clip,
     };
   }
 
@@ -120,7 +122,6 @@ export class DesignSerializer {
       ...this.extractBaseProps(node),
       src: node.src,
       fillMode: node.fillMode,
-      clip: node.clip as DesignImage['clip'],
     } as DesignImage;
   }
 
@@ -164,6 +165,7 @@ export class DesignSerializer {
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
+      clip: base.clip,
     });
   }
 
@@ -179,6 +181,7 @@ export class DesignSerializer {
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
+      clip: base.clip,
     });
   }
 
@@ -198,6 +201,7 @@ export class DesignSerializer {
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
+      clip: base.clip,
     });
   }
 
@@ -205,7 +209,7 @@ export class DesignSerializer {
     const base = this.applyBaseProps(node);
     return createImageNode(base.id, base.x, base.y, base.width, base.height, node.src, {
       fillMode: node.fillMode,
-      clip: node.clip,
+      clip: base.clip,
       opacity: base.opacity,
       visible: base.visible,
       rotation: base.rotation,
@@ -225,6 +229,7 @@ export class DesignSerializer {
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
+      clip: base.clip,
     });
   }
 }

@@ -27,6 +27,7 @@ export interface DesignNodeBase {
   strokeWidth: number;
   opacity: number;
   visible: boolean;
+  clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
 }
 
 export interface DesignRect extends DesignNodeBase {
@@ -53,7 +54,6 @@ export interface DesignImage extends DesignNodeBase {
   type: 'image';
   src: string;
   fillMode?: 'fill' | 'cover' | 'contain';
-  clip?: { type: 'circle'; radius: number } | { type: 'rect'; rx?: number; ry?: number };
 }
 
 export interface DesignGroup extends DesignNodeBase {
