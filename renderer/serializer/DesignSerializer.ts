@@ -1,0 +1,178 @@
+import type { SceneNode } from '../scene/SceneNode';
+import { SceneGraph } from '../scene/SceneGraph';
+import type { RectNode } from '../scene/nodes/RectNode';
+import type { CircleNode } from '../scene/nodes/CircleNode';
+import type { TextNode } from '../scene/nodes/TextNode';
+import type { ImageNode } from '../scene/nodes/ImageNode';
+import type { GroupNode } from '../scene/nodes/GroupNode';
+import type {
+  DesignJSON,
+  DesignNode,
+  DesignNodeBase,
+  DesignRect,
+  DesignCircle,
+  DesignText,
+  DesignImage,
+  DesignGroup,
+} from '../types/DesignTypes';
+
+export class DesignSerializer {
+  /**
+   * SceneGraph -> DesignJSON（导出）
+   */
+  serialize(graph: SceneGraph, canvasWidth: number, canvasHeight: number): DesignJSON {
+    return {
+      version: '1.0',
+      width: canvasWidth,
+      height: canvasHeight,
+      nodes: graph.getNodes().map(node => this.serializeNode(node)),
+    };
+  }
+
+  /**
+   * DesignJSON -> SceneGraph（导入）
+   */
+  parse(json: DesignJSON): { graph: SceneGraph; width: number; height: number } {
+    const nodes = json.nodes
+      .map(node => this.parseNode(node))
+      .filter(Boolean) as SceneNode[];
+    const graph = new SceneGraph(nodes);
+    return { graph, width: json.width, height: json.height };
+  }
+
+  // ========== 序列化 ==========
+
+  private serializeNode(node: SceneNode): DesignNode {
+    switch (node.type) {
+      case 'rect':
+        return this.serializeRect(node as RectNode);
+      case 'circle':
+        return this.serializeCircle(node as CircleNode);
+      case 'text':
+      case 'textbox':
+        return this.serializeText(node as TextNode);
+      case 'image':
+        return this.serializeImage(node as ImageNode);
+      case 'group':
+        return this.serializeGroup(node as GroupNode);
+    }
+  }
+
+  private extractBaseProps(node: SceneNode): DesignNodeBase {
+    return {
+      id: node.id,
+      type: node.type === 'textbox' ? 'text' : node.type,
+      x: node.x,
+      y: node.y,
+      width: node.width,
+      height: node.height,
+      rotation: node.rotation,
+      scaleX: node.scaleX,
+      scaleY: node.scaleY,
+      fill: node.fill,
+      stroke: node.stroke,
+      strokeWidth: node.strokeWidth,
+      opacity: node.opacity,
+      visible: node.visible,
+    };
+  }
+
+  private applyBaseProps(base: Partial<DesignNodeBase>): Omit<SceneNode, 'type'> {
+    return {
+      id: base.id ?? '',
+      x: base.x ?? 0,
+      y: base.y ?? 0,
+      width: base.width ?? 0,
+      height: base.height ?? 0,
+      rotation: base.rotation ?? 0,
+      scaleX: base.scaleX ?? 1,
+      scaleY: base.scaleY ?? 1,
+      fill: base.fill ?? null,
+      stroke: base.stroke ?? null,
+      strokeWidth: base.strokeWidth ?? 0,
+      opacity: base.opacity ?? 1,
+      visible: base.visible ?? true,
+    };
+  }
+
+  private serializeRect(node: RectNode): DesignRect {
+    return { ...this.extractBaseProps(node), rx: node.rx, ry: node.ry } as DesignRect;
+  }
+
+  private serializeCircle(node: CircleNode): DesignCircle {
+    return this.extractBaseProps(node) as DesignCircle;
+  }
+
+  private serializeText(node: TextNode): DesignText {
+    return {
+      ...this.extractBaseProps(node),
+      text: node.text,
+      fontSize: node.fontSize,
+      fontFamily: node.fontFamily,
+      fontWeight: node.fontWeight,
+      fontStyle: node.fontStyle,
+      textAlign: node.textAlign,
+    } as DesignText;
+  }
+
+  private serializeImage(node: ImageNode): DesignImage {
+    return {
+      ...this.extractBaseProps(node),
+      src: node.src,
+      fillMode: node.fillMode,
+      clip: node.clip as DesignImage['clip'],
+    } as DesignImage;
+  }
+
+  private serializeGroup(node: GroupNode): DesignGroup {
+    return {
+      ...this.extractBaseProps(node),
+      children: node.children.map(c => this.serializeNode(c)),
+    } as DesignGroup;
+  }
+
+  // ========== 解析 ==========
+
+  private parseNode(node: DesignNode): SceneNode | null {
+    if (!node || !node.type) return null;
+    switch (node.type) {
+      case 'rect':
+        return this.parseRect(node as DesignRect);
+      case 'circle':
+        return this.parseCircle(node as DesignCircle);
+      case 'text':
+        return this.parseText(node as DesignText);
+      case 'image':
+        return this.parseImage(node as DesignImage);
+      case 'group':
+        return this.parseGroup(node as DesignGroup);
+      default:
+        return null;
+    }
+  }
+
+  private parseRect(node: DesignRect): RectNode {
+    this.applyBaseProps(node);
+    throw new Error('Not implemented');
+  }
+
+  private parseCircle(node: DesignCircle): CircleNode {
+    this.applyBaseProps(node);
+    throw new Error('Not implemented');
+  }
+
+  private parseText(node: DesignText): TextNode {
+    this.applyBaseProps(node);
+    throw new Error('Not implemented');
+  }
+
+  private parseImage(node: DesignImage): ImageNode {
+    this.applyBaseProps(node);
+    throw new Error('Not implemented');
+  }
+
+  private parseGroup(node: DesignGroup): GroupNode {
+    this.applyBaseProps(node);
+    throw new Error('Not implemented');
+  }
+}
