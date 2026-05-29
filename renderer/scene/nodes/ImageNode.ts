@@ -11,16 +11,6 @@ export type ImageHandle = unknown;
 export type FillMode = 'fill' | 'cover' | 'contain';
 
 /**
- * 裁剪信息
- */
-export interface ClipInfo {
-  type: 'circle' | 'rect';
-  radius?: number;
-  rx?: number;
-  ry?: number;
-}
-
-/**
  * 图片节点
  */
 export interface ImageNode extends SceneNode {
@@ -40,9 +30,6 @@ export interface ImageNode extends SceneNode {
 
   /** 填充模式 */
   fillMode?: FillMode;
-
-  /** 裁剪信息 */
-  clip?: ClipInfo;
 }
 
 /**
@@ -62,7 +49,7 @@ export function createImageNode(
     scaleX?: number;
     scaleY?: number;
     fillMode?: FillMode;
-    clip?: ClipInfo;
+    clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
   }
 ): ImageNode {
   return {

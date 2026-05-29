@@ -2,6 +2,7 @@ import type {FabricGroup} from '../../types/FabricTypes';
 import type {GroupNode} from '../../scene/nodes/GroupNode';
 import {createGroupNode} from '../../scene/nodes/GroupNode';
 import type {SceneNode} from '../../scene/SceneNode';
+import {parseClipPath} from './ClipPathParser';
 import {TransformConverter} from '../TransformConverter';
 import {FabricParser} from '../FabricParser';
 import {logger} from '../../utils/Logger';
@@ -18,6 +19,9 @@ export class GroupParser {
     try {
       // 坐标转换
       const transform = TransformConverter.convert(obj);
+
+      // 解析裁剪信息
+      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
 
       // 解析子节点
       const children: SceneNode[] = [];
@@ -51,6 +55,7 @@ export class GroupParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          clip,
         }
       );
 

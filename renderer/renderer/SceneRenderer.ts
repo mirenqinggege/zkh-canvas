@@ -80,6 +80,11 @@ export class SceneRenderer {
     adapter.rotate(node.rotation);
     adapter.scale(node.scaleX, node.scaleY);
 
+    // 应用裁剪
+    if (node.clip) {
+      this.applyClip(node, adapter);
+    }
+
     // 获取对应的渲染器并执行渲染
     const renderer = this.renderers.get(node.type);
     if (renderer) {
@@ -97,5 +102,21 @@ export class SceneRenderer {
    */
   getRenderers(): Map<NodeType, NodeRenderer> {
     return this.renderers;
+  }
+
+  /**
+   * 应用裁剪路径
+   */
+  private applyClip(node: SceneNode, adapter: CanvasAdapter): void {
+    const clip = node.clip;
+    if (!clip) return;
+
+    if (clip.type === 'circle') {
+      const cx = node.width / 2;
+      const cy = node.height / 2;
+      adapter.clipCircle(cx, cy, clip.radius!);
+    } else if (clip.type === 'rect') {
+      adapter.clipRoundRect(0, 0, node.width, node.height, clip.rx ?? 0, clip.ry ?? 0);
+    }
   }
 }

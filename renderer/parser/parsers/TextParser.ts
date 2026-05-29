@@ -2,6 +2,7 @@ import type {FabricText} from '../../types/FabricTypes';
 import type {TextAlign, TextNode} from '../../scene/nodes/TextNode';
 import type {FontStyle} from '../../adapters/types/FontOptions';
 import {createTextNode} from '../../scene/nodes/TextNode';
+import {parseClipPath} from './ClipPathParser';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
@@ -32,6 +33,9 @@ export class TextParser {
       // 字体样式
       const fontStyle: FontStyle = obj.fontStyle || 'normal';
 
+      // 解析裁剪信息
+      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
+
       // 创建节点
       const node = createTextNode(
         generateNodeId('text', obj.id),
@@ -54,6 +58,7 @@ export class TextParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          clip,
         }
       );
 

@@ -1,6 +1,7 @@
-import type {FabricImage, FabricClipPath, FillMode} from '../../types/FabricTypes';
-import type {ImageNode, ClipInfo} from '../../scene/nodes/ImageNode';
+import type {FabricImage} from '../../types/FabricTypes';
+import type {ImageNode} from '../../scene/nodes/ImageNode';
 import {createImageNode} from '../../scene/nodes/ImageNode';
+import {parseClipPath} from './ClipPathParser';
 import {TransformConverter} from '../TransformConverter';
 import {logger} from '../../utils/Logger';
 import {generateNodeId} from './NodeIdGenerator';
@@ -26,10 +27,10 @@ export class ImageParser {
       }
 
       // 解析裁剪信息
-      const clip = this.parseClipPath(obj.clipPath, obj.width, obj.height);
+      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
 
       // 解析填充模式
-      const fillMode: FillMode = obj.fillMode || 'fill';
+      const fillMode: 'fill' | 'cover' | 'contain' = obj.fillMode || 'fill';
 
       // 创建节点
       const node = createImageNode(
@@ -65,32 +66,5 @@ export class ImageParser {
   private static extractImageSrc(obj: FabricImage): string | null {
     if (obj.src) return obj.src;
     return null;
-  }
-
-  /**
-   * 解析裁剪路径
-   */
-  private static parseClipPath(
-    clipPath: FabricClipPath | undefined,
-    nodeWidth: number,
-    nodeHeight: number
-  ): ClipInfo | undefined {
-    if (!clipPath) return undefined;
-
-    if (clipPath.type === 'circle') {
-      // 有 radius 用 radius，没有则自动计算
-      const radius = clipPath.radius ?? Math.min(nodeWidth, nodeHeight) / 2;
-      return {type: 'circle', radius};
-    }
-
-    if (clipPath.type === 'rect') {
-      return {
-        type: 'rect',
-        rx: clipPath.rx ?? 0,
-        ry: clipPath.ry ?? 0,
-      };
-    }
-
-    return undefined;
   }
 }

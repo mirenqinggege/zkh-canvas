@@ -8,7 +8,7 @@ import type {
   RectElement
 } from '../types/CardTypes';
 import type {SceneNode} from '../scene/SceneNode';
-import type {ClipInfo, FillMode} from '../scene/nodes/ImageNode';
+import type {FillMode} from '../scene/nodes/ImageNode';
 import type {FontStyle} from '../adapters/types/FontOptions';
 import {SceneGraph} from '../scene/SceneGraph';
 import {createImageNode} from '../scene/nodes/ImageNode';
@@ -113,7 +113,7 @@ export class CardParser {
     }
 
     const fillMode: FillMode = element.fillMode || 'cover';
-    const clip: ClipInfo = {type: 'circle', radius: Math.min(element.width, element.height) / 2};
+    const clip = {type: 'circle' as const, radius: Math.min(element.width, element.height) / 2};
 
     return createImageNode(
       element.id,

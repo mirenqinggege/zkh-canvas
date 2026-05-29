@@ -55,6 +55,7 @@ export function createTextNode(
     rotation?: number;
     scaleX?: number;
     scaleY?: number;
+    clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
   }
 ): TextNode {
   return {
@@ -78,5 +79,6 @@ export function createTextNode(
     rotation: options?.rotation ?? 0,
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
+    clip: options?.clip,
   };
 }

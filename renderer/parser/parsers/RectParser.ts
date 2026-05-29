@@ -1,6 +1,7 @@
 import type {FabricRect} from '../../types/FabricTypes';
 import type {RectNode} from '../../scene/nodes/RectNode';
 import {createRectNode} from '../../scene/nodes/RectNode';
+import {parseClipPath} from './ClipPathParser';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
@@ -17,6 +18,9 @@ export class RectParser {
     try {
       // 坐标转换
       const transform = TransformConverter.convert(obj);
+
+      // 解析裁剪信息
+      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
 
       // 创建节点
       const node = createRectNode(
@@ -36,6 +40,7 @@ export class RectParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          clip,
         }
       );
 

@@ -33,6 +33,9 @@ export interface SceneNode {
 
   /** 是否可见 */
   visible: boolean;
+
+  /** 裁剪信息 */
+  clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
 }
 
 /**

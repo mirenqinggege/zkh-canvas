@@ -1,6 +1,7 @@
 import type {FabricCircle} from '../../types/FabricTypes';
 import type {CircleNode} from '../../scene/nodes/CircleNode';
 import {createCircleNode} from '../../scene/nodes/CircleNode';
+import {parseClipPath} from './ClipPathParser';
 import {TransformConverter} from '../TransformConverter';
 import {normalizeColor} from '../../utils/ColorParser';
 import {logger} from '../../utils/Logger';
@@ -20,6 +21,9 @@ export class CircleParser {
 
       // Circle 的半径
       const radius = obj.radius;
+
+      // 解析裁剪信息
+      const clip = parseClipPath(obj.clipPath, obj.width, obj.height);
 
       // Circle 在 Fabric 中 left/top 是圆心坐标
       // 转换后 x/y 是圆的外接矩形左上角
@@ -42,6 +46,7 @@ export class CircleParser {
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,
+          clip,
         }
       );
 
