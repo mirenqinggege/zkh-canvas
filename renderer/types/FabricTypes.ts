@@ -48,6 +48,9 @@ export interface FabricObjectBase {
 
   // 唯一标识
   id?: string;
+
+  // 是否锁定（自定义扩展属性）
+  locked?: boolean;
 }
 
 /**

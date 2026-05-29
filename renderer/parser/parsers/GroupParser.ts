@@ -52,6 +52,7 @@ export class GroupParser {
         {
           opacity: obj.opacity ?? 1,
           visible: obj.visible ?? true,
+          locked: obj.locked,
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,

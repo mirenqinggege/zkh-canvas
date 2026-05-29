@@ -74,6 +74,7 @@ export class DesignSerializer {
       strokeWidth: node.strokeWidth,
       opacity: node.opacity,
       visible: node.visible,
+      locked: node.locked,
       clip: node.clip,
     };
   }
@@ -93,6 +94,7 @@ export class DesignSerializer {
       strokeWidth: base.strokeWidth ?? 0,
       opacity: base.opacity ?? 1,
       visible: base.visible ?? true,
+      locked: base.locked,
       clip: base.clip,
     };
   }
@@ -163,6 +165,7 @@ export class DesignSerializer {
       strokeWidth: base.strokeWidth,
       opacity: base.opacity,
       visible: base.visible,
+      locked: base.locked,
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
@@ -179,6 +182,7 @@ export class DesignSerializer {
       strokeWidth: base.strokeWidth,
       opacity: base.opacity,
       visible: base.visible,
+      locked: base.locked,
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
@@ -200,6 +204,7 @@ export class DesignSerializer {
       strokeWidth: base.strokeWidth,
       opacity: base.opacity,
       visible: base.visible,
+      locked: base.locked,
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
@@ -214,6 +219,7 @@ export class DesignSerializer {
       clip: base.clip,
       opacity: base.opacity,
       visible: base.visible,
+      locked: base.locked,
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,
@@ -228,6 +234,7 @@ export class DesignSerializer {
     return createGroupNode(base.id, base.x, base.y, base.width, base.height, children, {
       opacity: base.opacity,
       visible: base.visible,
+      locked: base.locked,
       rotation: base.rotation,
       scaleX: base.scaleX,
       scaleY: base.scaleY,

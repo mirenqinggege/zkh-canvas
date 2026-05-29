@@ -28,6 +28,7 @@ export function createGroupNode(
     scaleX?: number;
     scaleY?: number;
     clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+    locked?: boolean;
   }
 ): GroupNode {
   return {
@@ -47,5 +48,6 @@ export function createGroupNode(
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
     clip: options?.clip,
+    locked: options?.locked ?? false,
   };
 }

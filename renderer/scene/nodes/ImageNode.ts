@@ -50,6 +50,7 @@ export function createImageNode(
     scaleY?: number;
     fillMode?: FillMode;
     clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+    locked?: boolean;
   }
 ): ImageNode {
   return {
@@ -70,5 +71,6 @@ export function createImageNode(
     scaleY: options?.scaleY ?? 1,
     fillMode: options?.fillMode ?? 'fill',
     clip: options?.clip,
+    locked: options?.locked ?? false,
   };
 }

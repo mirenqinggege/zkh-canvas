@@ -37,6 +37,7 @@ export class RectParser {
           strokeWidth: obj.strokeWidth || 1,
           opacity: obj.opacity ?? 1,
           visible: obj.visible ?? true,
+          locked: obj.locked,
           rotation: transform.rotation,
           scaleX: transform.scaleX,
           scaleY: transform.scaleY,

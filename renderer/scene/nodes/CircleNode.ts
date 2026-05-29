@@ -29,6 +29,7 @@ export function createCircleNode(
     scaleX?: number;
     scaleY?: number;
     clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+    locked?: boolean;
   }
 ): CircleNode {
   // 圆形的宽高等于 2 * radius
@@ -52,5 +53,6 @@ export function createCircleNode(
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
     clip: options?.clip,
+    locked: options?.locked ?? false,
   };
 }

@@ -28,6 +28,9 @@ export interface DesignNodeBase {
   opacity: number;
   visible: boolean;
   clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+
+  /** 是否锁定 */
+  locked?: boolean;
 }
 
 export interface DesignRect extends DesignNodeBase {

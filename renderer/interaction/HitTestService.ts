@@ -37,6 +37,7 @@ export class HitTestService {
     for (let i = nodes.length - 1; i >= 0; i--) {
       const node = nodes[i];
       if (!node.visible) continue;
+      if (node.locked) continue;
 
       const hit = this.hitTestNode(node, x, y);
       if (hit) return hit;

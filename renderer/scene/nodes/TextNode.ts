@@ -60,6 +60,7 @@ export function createTextNode(
     scaleX?: number;
     scaleY?: number;
     clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+    locked?: boolean;
   }
 ): TextNode {
   return {
@@ -85,5 +86,6 @@ export function createTextNode(
     scaleX: options?.scaleX ?? 1,
     scaleY: options?.scaleY ?? 1,
     clip: options?.clip,
+    locked: options?.locked ?? false,
   };
 }

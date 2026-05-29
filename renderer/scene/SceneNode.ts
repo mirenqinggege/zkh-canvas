@@ -36,6 +36,9 @@ export interface SceneNode {
 
   /** 裁剪信息 */
   clip?: { type: 'circle' | 'rect'; radius?: number; rx?: number; ry?: number };
+
+  /** 是否锁定（锁定后不参与事件响应） */
+  locked?: boolean;
 }
 
 /**
