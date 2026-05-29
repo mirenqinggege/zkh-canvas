@@ -1,20 +1,21 @@
 # zkh-canvas-renderer
 
-基于 uni-app 的跨端 Canvas 渲染引擎，用于解析 Fabric.js 导出的 JSON 并在各平台进行 Canvas 绘制。
+基于 uni-app 的跨端 Canvas 渲染引擎，解析 Fabric.js 5.x 导出的 JSON 并在各平台绘制。
 
 ## 特性
 
-- **跨端渲染** - 支持微信小程序、H5/浏览器等平台
-- **Fabric.js 兼容** - 解析 Fabric.js 5.x 导出的 JSON 结构
-- **平台隔离** - 所有平台差异通过 Adapter 层抽象
-- **高清适配** - 自动检测 DPR 并应用，确保清晰渲染
-- **图片预加载** - 渲染前统一加载图片，保证绘制完整
-- **强类型** - 完整 TypeScript 类型定义
+- **Fabric.js 5.x 兼容** — 解析标准 Fabric.js JSON 结构，支持 rect/circle/text/textbox/image/group
+- **跨端渲染** — 通过 Adapter 模式抽象平台差异，支持 H5/浏览器和微信小程序
+- **交互系统** — 内置命中检测（HitTest）、选中、拖拽、缩放、旋转、选中框渲染
+- **高清适配** — 自动检测 DPR 并应用到 Canvas，确保渲染清晰
+- **图片预加载** — 渲染前统一加载图片资源，保证绘制完整
+- **名片模板** — 支持简化的卡片模板 JSON 格式，快速渲染名片/海报
+- **强类型** — 完整 TypeScript 类型定义
 
 ## 架构
 
 ```
-Fabric JSON (输入)
+Fabric JSON / Card JSON (输入)
     ↓
 Parser (解析 + 坐标转换)
     ↓
@@ -22,9 +23,41 @@ SceneGraph (统一节点树)
     ↓
 Renderer (绘制逻辑)
     ↓
-CanvasAdapter (平台抽象)
+CanvasAdapter (平台抽象层)
     ↓
-各平台 Canvas API
+各平台 Canvas API (H5 / 微信小程序)
+```
+
+### 目录结构
+
+```
+renderer/
+├── parser/              # JSON 解析器
+│   ├── FabricParser.ts  # Fabric.js JSON 解析
+│   ├── CardParser.ts    # 名片模板 JSON 解析
+│   └── TransformConverter.ts  # 坐标转换（center→top-left）
+├── scene/               # 场景图
+│   ├── nodes/           # 节点类型定义（Rect, Circle, Text, Image, Group）
+│   └── SceneGraph.ts    # 场景图管理器
+├── renderer/            # 渲染器
+│   ├── renderers/       # 各类型渲染器
+│   └── SceneRenderer.ts # 场景渲染入口
+├── adapters/            # 平台适配器
+│   ├── H5Adapter.ts     # H5/浏览器
+│   ├── WechatAdapter.ts # 微信小程序
+│   └── CanvasAdapter.ts # 适配器接口定义
+├── interaction/         # 交互系统
+│   ├── HitTestService.ts          # 几何命中检测
+│   ├── EventManager.ts            # 事件分发管理
+│   ├── SelectionOverlayRenderer.ts # 选中框/控制柄绘制
+│   └── controllers/
+│       ├── SelectionController.ts  # 选中控制器
+│       ├── DragController.ts       # 拖拽控制器
+│       ├── ResizeController.ts     # 缩放控制器（8 方向）
+│       └── RotateController.ts     # 旋转控制器
+├── engine/              # 引擎入口
+├── types/               # 类型定义
+└── utils/               # 工具函数
 ```
 
 ## 安装
@@ -35,14 +68,89 @@ npm install zkh-canvas-renderer
 
 ## 使用示例
 
+### H5/浏览器 — 基础渲染
+
+```typescript
+import { CanvasEngine, H5Adapter } from 'zkh-canvas-renderer';
+
+// 创建引擎
+const adapter = H5Adapter.fromId('myCanvas');
+const engine = new CanvasEngine(adapter);
+
+// 初始化
+await engine.initialize();
+
+// 渲染 Fabric JSON
+const result = await engine.render({
+  version: '5.0.0',
+  width: 800,
+  height: 600,
+  objects: [
+    {
+      type: 'rect',
+      left: 100, top: 100,
+      width: 200, height: 150,
+      fill: '#ff5722',
+      rx: 10, ry: 10,
+    },
+    {
+      type: 'circle',
+      left: 400, top: 300,
+      radius: 80, fill: '#4caf50',
+    },
+    {
+      type: 'text',
+      left: 50, top: 50,
+      text: 'Hello Canvas',
+      fontSize: 32,
+      fill: '#333333',
+    },
+  ],
+});
+
+console.log('渲染完成', result);
+```
+
+### H5/浏览器 — 启用交互
+
+```typescript
+import { CanvasEngine, H5Adapter } from 'zkh-canvas-renderer';
+
+const adapter = H5Adapter.fromId('myCanvas');
+const engine = new CanvasEngine(adapter);
+await engine.initialize();
+
+// 先渲染场景
+await engine.render(fabricJSON);
+
+// 然后启用交互（选中、拖拽、缩放、旋转）
+engine.enableInteraction();
+
+// 监听选中变化
+const selCtrl = engine.getSelectionController();
+selCtrl?.onChange((selectedIds) => {
+  console.log('已选中:', selectedIds);
+});
+
+// 鼠标事件由 EventManager 自动处理
+// 交互功能：
+// - 单击选中 / Shift+单击多选
+// - 拖拽移动选中节点
+// - 拖拽控制柄调整大小
+// - 拖拽旋转手柄旋转
+
+// 禁用交互
+engine.disableInteraction();
+```
+
 ### 微信小程序
 
 ```vue
 <template>
   <view class="canvas-container">
-    <canvas 
-      type="2d" 
-      id="fabricCanvas" 
+    <canvas
+      type="2d"
+      id="fabricCanvas"
       canvas-id="fabricCanvas"
       :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
     />
@@ -57,236 +165,157 @@ const canvasWidth = ref(375);
 const canvasHeight = ref(600);
 
 onMounted(async () => {
-  // 初始化适配器
   const adapter = new WechatAdapter('fabricCanvas');
-  
-  // 创建引擎
   const engine = new CanvasEngine(adapter);
-  
-  // 初始化
   await engine.initialize();
-  
-  // 加载 Fabric JSON
-  const fabricJSON = {
+
+  const result = await engine.render({
     version: '5.0.0',
     objects: [
       {
         type: 'rect',
-        left: 100,
-        top: 100,
-        width: 200,
-        height: 150,
+        left: 100, top: 100,
+        width: 200, height: 150,
         fill: '#ff5722',
-        stroke: '#333333',
-        strokeWidth: 2
       },
-      {
-        type: 'circle',
-        left: 200,
-        top: 300,
-        radius: 50,
-        fill: '#2196f3'
-      },
-      {
-        type: 'text',
-        left: 50,
-        top: 50,
-        text: 'Hello Canvas',
-        fontSize: 24,
-        fill: '#000000'
-      }
-    ]
-  };
-  
-  // 渲染
-  const result = await engine.render(fabricJSON);
-  
-  if (!result.success) {
-    console.warn('部分图片加载失败', result.failedImages);
-  }
+    ],
+  });
 });
 </script>
 ```
 
-### H5/浏览器
+### 名片模板
 
-```html
-<canvas id="fabricCanvas" width="800" height="600"></canvas>
-
-<script type="module">
+```typescript
 import { CanvasEngine, H5Adapter } from 'zkh-canvas-renderer';
 
-// 通过 Canvas ID 创建适配器
-const adapter = H5Adapter.fromId('fabricCanvas');
-
-// 或直接传入 Canvas 元素
-// const canvas = document.getElementById('fabricCanvas');
-// const adapter = new H5Adapter(canvas);
-
-// 创建引擎
-const engine = new CanvasEngine(adapter);
-
-// 初始化
+const engine = new CanvasEngine(H5Adapter.fromId('myCanvas'));
 await engine.initialize();
 
-// 加载 Fabric JSON
-const fabricJSON = {
-  version: '5.0.0',
-  objects: [
+await engine.renderCard({
+  size: { width: 500, height: 300 },
+  background: { color: '#ffffff' },
+  elements: [
     {
-      type: 'rect',
-      left: 100,
-      top: 100,
-      width: 200,
-      height: 150,
-      fill: '#ff5722',
-      rx: 10,
-      ry: 10
-    },
-    {
-      type: 'circle',
-      left: 400,
-      top: 300,
-      radius: 80,
-      fill: '#4caf50'
+      type: 'avatar',
+      src: 'https://example.com/avatar.jpg',
+      x: 20, y: 40, width: 80, height: 80,
+      borderRadius: 40,
     },
     {
       type: 'text',
-      left: 50,
-      top: 50,
-      text: 'Hello H5 Canvas',
-      fontSize: 32,
-      fontFamily: 'Arial',
-      fill: '#333333'
-    }
-  ]
-};
-
-// 渲染
-const result = await engine.render(fabricJSON);
-console.log('渲染完成', result);
-</script>
+      x: 120, y: 50, fontSize: 24, bold: true,
+      text: '张三',
+      color: '#333',
+    },
+  ],
+});
 ```
 
 ## 支持的对象类型
 
-| 类型 | 说明 |
-|------|------|
-| `rect` | 矩形（支持圆角 rx/ry） |
-| `circle` | 圆形 |
-| `text` | 文本 |
-| `textbox` | 文本框 |
-| `image` | 图片 |
-| `group` | 组（嵌套子对象） |
+| 类型 | 说明 | 特殊属性 |
+|------|------|----------|
+| `rect` | 矩形 | `rx` / `ry` 圆角 |
+| `circle` | 圆形 | `radius` |
+| `text` | 文本 | `fontSize`, `fontFamily`, `fontWeight` |
+| `textbox` | 文本框 | 同 text |
+| `image` | 图片 | `src` 图片 URL |
+| `group` | 组 | `objects` 嵌套子对象 |
 
 ## API
 
 ### CanvasEngine
 
-```typescript
-// 创建引擎
-const engine = new CanvasEngine(adapter, { debug: true });
+| 方法 | 说明 |
+|------|------|
+| `initialize()` | 初始化引擎，准备 Canvas |
+| `render(json)` | 渲染 Fabric.js JSON |
+| `renderCard(json)` | 渲染名片模板 JSON |
+| `enableInteraction()` | 启用交互（在 render 之后调用） |
+| `disableInteraction()` | 禁用交互 |
+| `resize(width, height)` | 调整 Canvas 尺寸 |
+| `destroy()` | 销毁引擎，释放资源 |
 
-// 初始化
-await engine.initialize();
+### 交互系统
 
-// 渲染
-const result = await engine.render(fabricJSON);
+| 组件 | 说明 |
+|------|------|
+| `SelectionController` | 点选、Shift 多选、状态管理 |
+| `DragController` | 拖拽移动选中节点 |
+| `ResizeController` | 8 方向控制柄缩放 |
+| `RotateController` | 旋转手柄 |
+| `EventManager` | 事件分发，按优先级路由到各控制器 |
+| `HitTestService` | 几何命中检测（支持圆角矩形、圆形、变换逆运算） |
+| `SelectionOverlayRenderer` | 选中框、控制柄、旋转手柄绘制 |
 
-// 销毁
-engine.destroy();
+### CanvasAdapter
 
-// 设置尺寸
-engine.resize(width, height);
-```
-
-### WechatAdapter（微信小程序）
-
-```typescript
-// 通过 Canvas ID 创建
-const adapter = new WechatAdapter('canvasId');
-await adapter.initialize();
-```
-
-### H5Adapter（浏览器）
-
-```typescript
-// 通过 Canvas ID 创建
-const adapter = H5Adapter.fromId('canvasId');
-
-// 或直接传入 Canvas 元素
-const canvas = document.getElementById('canvasId');
-const adapter = new H5Adapter(canvas);
-
-await adapter.initialize();
-```
-
-### SceneGraph
+平台适配器需要实现 `CanvasAdapter` 接口：
 
 ```typescript
-// 手动创建节点
-import { createRectNode, createCircleNode, SceneGraph } from 'zkh-canvas-renderer';
-
-const rectNode = createRectNode('rect-1', 10, 10, 100, 80, {
-  fill: '#ff0000'
-});
-
-const graph = new SceneGraph([rectNode]);
+interface CanvasAdapter {
+  initialize(): Promise<void>;
+  destroy(): void;
+  save(): void;
+  restore(): void;
+  translate(x: number, y: number): void;
+  rotate(rad: number): void;
+  scale(x: number, y: number): void;
+  setFillStyle(color: string): void;
+  setStrokeStyle(color: string): void;
+  setLineWidth(width: number): void;
+  setFont(options: FontOptions): void;
+  setGlobalAlpha(alpha: number): void;
+  fillRect(x: number, y: number, w: number, h: number): void;
+  strokeRect(x: number, y: number, w: number, h: number): void;
+  clearRect(x: number, y: number, w: number, h: number): void;
+  beginPath(): void;
+  closePath(): void;
+  moveTo(x: number, y: number): void;
+  lineTo(x: number, y: number): void;
+  arc(x: number, y: number, r: number, start: number, end: number): void;
+  fill(): void;
+  stroke(): void;
+  clip(): void;
+  fillText(text: string, x: number, y: number): void;
+  measureText(text: string): TextMetrics;
+  drawImage(image: ImageHandle, ...args: number[]): void;
+  getDPR(): number;
+  clear(): void;
+}
 ```
 
-## 目录结构
+| 适配器 | 说明 |
+|--------|------|
+| `H5Adapter` | H5/浏览器，支持 `H5Adapter.fromId(id)` 便捷创建 |
+| `WechatAdapter` | 微信小程序 2D Canvas |
 
-```
-renderer/
-├── parser/          # Fabric JSON 解析器
-│   ├── parsers/     # 各类型解析器
-│   └── TransformConverter.ts  # 坐标转换
-├── scene/           # 场景图节点结构
-│   └── nodes/       # 各类型节点
-├── renderer/        # 渲染器
-│   └── renderers/   # 各类型渲染器
-├── adapters/        # 平台适配器
-│   ├── WechatAdapter.ts  # 微信小程序
-│   ├── H5Adapter.ts      # H5/浏览器
-│   └── types/       # 适配器类型定义
-├── engine/          # 引擎入口
-├── utils/           # 工具函数
-├── types/           # 类型定义
-└── index.ts         # 导出入口
-```
+### 工具函数
 
-## 设计原则
-
-1. **Parser 职责单一** - 只负责解析和坐标转换
-2. **SceneGraph 纯数据** - 不包含渲染逻辑
-3. **Renderer 无平台依赖** - 所有差异通过 Adapter 隔离
-4. **Adapter 统一接口** - 平台实现的唯一入口
+| 函数 | 说明 |
+|------|------|
+| `degToRad(deg)` | 角度转弧度 |
+| `radToDeg(rad)` | 弧度转角度 |
+| `clamp(value, min, max)` | 数值限幅 |
+| `normalizeColor(color)` | 颜色标准化 |
+| `isValidColor(color)` | 颜色值校验 |
 
 ## 扩展新平台
 
-实现 `CanvasAdapter` 接口即可支持新平台：
+实现 `CanvasAdapter` 接口即可：
 
 ```typescript
+import type { CanvasAdapter, ImageHandle, FontOptions } from 'zkh-canvas-renderer';
+
 class CustomAdapter implements CanvasAdapter {
   async initialize() { /* ... */ }
   save() { /* ... */ }
   restore() { /* ... */ }
   translate(x, y) { /* ... */ }
-  rotate(rad) { /* ... */ }
-  scale(x, y) { /* ... */ }
   // ... 实现所有接口方法
 }
 ```
-
-## 后续规划
-
-- [x] WechatAdapter 实现
-- [x] H5Adapter 实现
-- [ ] AppAdapter 实现（uni-app nvue）
-- [ ] hitTest 命中检测
-- [ ] selection/drag/resize 交互
-- [ ] clipPath/path 绘制
-- [ ] 动画系统
 
 ## 开发
 
@@ -299,7 +328,29 @@ npm run typecheck
 
 # 构建
 npm run build
+
+# 开发模式（watch）
+npm run dev
 ```
+
+### H5 测试
+
+```bash
+cd test/h5
+npm install
+npm run dev
+```
+
+## 后续规划
+
+- [x] WechatAdapter 实现
+- [x] H5Adapter 实现
+- [x] 交互系统（hitTest / 选中 / 拖拽 / 缩放 / 旋转）
+- [ ] AppAdapter 实现（uni-app nvue）
+- [ ] 框选（多节点区域选择）
+- [ ] clipPath / path 绘制支持
+- [ ] 动画系统
+- [ ] 撤销/重做（Undo/Redo）
 
 ## License
 
