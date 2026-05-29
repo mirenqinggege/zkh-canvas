@@ -6,6 +6,8 @@ import { createTextNode } from '../../../renderer/scene/nodes/TextNode';
 import { createImageNode } from '../../../renderer/scene/nodes/ImageNode';
 import { createGroupNode } from '../../../renderer/scene/nodes/GroupNode';
 import type { GroupNode } from '../../../renderer/scene/nodes/GroupNode';
+import type { RectNode } from '../../../renderer/scene/nodes/RectNode';
+import type { CircleNode } from '../../../renderer/scene/nodes/CircleNode';
 import { SceneGraph } from '../../../renderer/scene/SceneGraph';
 
 describe('DesignSerializer', () => {
@@ -221,6 +223,102 @@ describe('DesignSerializer', () => {
       const group = createGroupNode('g1', 0, 0, 100, 100, []);
       const json = (serializer as any).serializeNode(group);
       expect(json.type).toBe('group');
+    });
+  });
+
+  describe('Integration - full scene round-trip', () => {
+    it('完整场景 serialize → parse 往返一致', () => {
+      const rect = createRectNode('r1', 10, 20, 200, 100, { fill: '#3498db', rx: 8 });
+      const circle = createCircleNode('c1', 300, 50, 40, { fill: '#e74c3c' });
+      const text = createTextNode('t1', 10, 200, 'Hello', 200, 30, { fontSize: 24 });
+      const groupChild = createRectNode('rc1', 0, 0, 50, 50, { fill: '#2ecc71' });
+      const group = createGroupNode('g1', 100, 300, 200, 100, [groupChild]);
+
+      const graph = new SceneGraph([rect, circle, text, group]);
+      const json = serializer.serialize(graph, 800, 600);
+
+      expect(json.version).toBe('1.0');
+      expect(json.width).toBe(800);
+      expect(json.height).toBe(600);
+      expect(json.nodes.length).toBe(4);
+
+      const result = serializer.parse(json);
+      expect(result.width).toBe(800);
+      expect(result.height).toBe(600);
+
+      const restoredGraph = result.graph;
+      const nodes = restoredGraph.getNodes();
+      expect(nodes.length).toBe(4);
+
+      const restoredRect = nodes.find(n => n.id === 'r1')!;
+      expect(restoredRect).toBeDefined();
+      expect((restoredRect as RectNode).rx).toBe(8);
+
+      const restoredCircle = nodes.find(n => n.id === 'c1')!;
+      expect(restoredCircle).toBeDefined();
+      expect((restoredCircle as CircleNode).radius).toBe(40);
+
+      const restoredGroup = nodes.find(n => n.id === 'g1') as GroupNode;
+      expect(restoredGroup.children.length).toBe(1);
+      expect(restoredGroup.children[0].id).toBe('rc1');
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('空场景 nodes: []', () => {
+      const graph = new SceneGraph([]);
+      const json = serializer.serialize(graph, 0, 0);
+      expect(json.nodes).toEqual([]);
+
+      const result = serializer.parse(json);
+      expect(result.graph.getNodes()).toEqual([]);
+    });
+
+    it('缺失属性使用默认值', () => {
+      const incompleteJSON = {
+        version: '1.0',
+        width: 100,
+        height: 100,
+        nodes: [
+          { id: 'r1', type: 'rect' as const, x: 0, y: 0, width: 50, height: 50 },
+        ],
+      };
+      const result = serializer.parse(incompleteJSON);
+      const node = result.graph.getNodes()[0];
+      expect(node.rotation).toBe(0);
+      expect(node.scaleX).toBe(1);
+      expect(node.scaleY).toBe(1);
+      expect(node.opacity).toBe(1);
+      expect(node.visible).toBe(true);
+    });
+
+    it('未知属性被忽略', () => {
+      const jsonWithExtra = {
+        version: '1.0',
+        width: 100,
+        height: 100,
+        nodes: [
+          { id: 'r1', type: 'rect' as const, x: 10, y: 20, width: 100, height: 50,
+            unknownField: 'shouldBeIgnored' },
+        ],
+      };
+      const result = serializer.parse(jsonWithExtra);
+      expect(result.graph.getNodes().length).toBe(1);
+    });
+
+    it('未知 type 跳过', () => {
+      const jsonWithUnknown = {
+        version: '1.0',
+        width: 100,
+        height: 100,
+        nodes: [
+          { id: 'r1', type: 'rect' as const, x: 0, y: 0, width: 50, height: 50 },
+          { id: 'x1', type: 'unknown' as const, x: 0, y: 0, width: 10, height: 10 },
+        ],
+      };
+      const result = serializer.parse(jsonWithUnknown);
+      expect(result.graph.getNodes().length).toBe(1);
+      expect(result.graph.getNodes()[0].id).toBe('r1');
     });
   });
 });
