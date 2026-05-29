@@ -30,3 +30,7 @@ export type {
   RectElement,
   TextFieldStyles,
 } from './CardTypes';
+export type {
+  DesignJSON, DesignNode, DesignNodeBase,
+  DesignRect, DesignCircle, DesignText, DesignImage, DesignGroup,
+} from './DesignTypes';
