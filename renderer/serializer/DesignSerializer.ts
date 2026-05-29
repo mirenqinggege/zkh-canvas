@@ -1,7 +1,7 @@
 import type { SceneNode } from '../scene/SceneNode';
 import { SceneGraph } from '../scene/SceneGraph';
-import type { RectNode } from '../scene/nodes/RectNode';
-import type { CircleNode } from '../scene/nodes/CircleNode';
+import { createRectNode, type RectNode } from '../scene/nodes/RectNode';
+import { createCircleNode, type CircleNode } from '../scene/nodes/CircleNode';
 import type { TextNode } from '../scene/nodes/TextNode';
 import type { ImageNode } from '../scene/nodes/ImageNode';
 import type { GroupNode } from '../scene/nodes/GroupNode';
@@ -152,13 +152,34 @@ export class DesignSerializer {
   }
 
   private parseRect(node: DesignRect): RectNode {
-    this.applyBaseProps(node);
-    throw new Error('Not implemented');
+    const base = this.applyBaseProps(node);
+    return createRectNode(base.id, base.x, base.y, base.width, base.height, {
+      rx: node.rx,
+      ry: node.ry,
+      fill: base.fill,
+      stroke: base.stroke,
+      strokeWidth: base.strokeWidth,
+      opacity: base.opacity,
+      visible: base.visible,
+      rotation: base.rotation,
+      scaleX: base.scaleX,
+      scaleY: base.scaleY,
+    });
   }
 
   private parseCircle(node: DesignCircle): CircleNode {
-    this.applyBaseProps(node);
-    throw new Error('Not implemented');
+    const base = this.applyBaseProps(node);
+    const radius = base.width / 2;
+    return createCircleNode(base.id, base.x, base.y, radius, {
+      fill: base.fill,
+      stroke: base.stroke,
+      strokeWidth: base.strokeWidth,
+      opacity: base.opacity,
+      visible: base.visible,
+      rotation: base.rotation,
+      scaleX: base.scaleX,
+      scaleY: base.scaleY,
+    });
   }
 
   private parseText(node: DesignText): TextNode {

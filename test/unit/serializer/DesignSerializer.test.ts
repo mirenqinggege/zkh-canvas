@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DesignSerializer } from '../../../renderer/serializer/DesignSerializer';
 import { createRectNode } from '../../../renderer/scene/nodes/RectNode';
+import { createCircleNode } from '../../../renderer/scene/nodes/CircleNode';
 import { SceneGraph } from '../../../renderer/scene/SceneGraph';
 
 describe('DesignSerializer', () => {
@@ -75,6 +76,63 @@ describe('DesignSerializer', () => {
       expect(json.width).toBe(800);
       expect(json.height).toBe(600);
       expect(json.nodes.length).toBe(1);
+    });
+  });
+
+  describe('Rect round-trip', () => {
+    it('矩形 serialize -> parse 往返一致', () => {
+      const original = createRectNode('r1', 10, 20, 200, 100, {
+        rx: 8, ry: 8, fill: '#3498db', stroke: '#2980b9',
+        strokeWidth: 2, opacity: 0.9, rotation: 0.5, scaleX: 1.5, scaleY: 1,
+      });
+      const json = (serializer as any).serializeRect(original);
+      expect(json.type).toBe('rect');
+      expect(json.rx).toBe(8);
+      expect(json.ry).toBe(8);
+
+      const restored = (serializer as any).parseRect(json);
+      expect(restored.id).toBe('r1');
+      expect(restored.x).toBe(10);
+      expect(restored.y).toBe(20);
+      expect(restored.width).toBe(200);
+      expect(restored.height).toBe(100);
+      expect(restored.rx).toBe(8);
+      expect(restored.ry).toBe(8);
+      expect(restored.fill).toBe('#3498db');
+      expect(restored.opacity).toBe(0.9);
+      expect(restored.rotation).toBe(0.5);
+    });
+  });
+
+  describe('Circle round-trip', () => {
+    it('圆形 serialize -> parse 往返一致', () => {
+      const original = createCircleNode('c1', 50, 50, 40, {
+        fill: '#e74c3c', stroke: '#c0392b', strokeWidth: 2,
+      });
+      const json = (serializer as any).serializeCircle(original);
+      expect(json.type).toBe('circle');
+
+      const restored = (serializer as any).parseCircle(json);
+      expect(restored.id).toBe('c1');
+      expect(restored.radius).toBe(40);
+      expect(restored.width).toBe(80);
+      expect(restored.height).toBe(80);
+      expect(restored.fill).toBe('#e74c3c');
+      expect(restored.stroke).toBe('#c0392b');
+    });
+
+    it('圆形 round-trip 测试：serializeNode -> parseNode', () => {
+      const original = createCircleNode('c2', 100, 100, 50, {
+        fill: '#f39c12', rotation: 0.3, scaleX: 1.2,
+      });
+      const json = serializer['serializeNode'](original);
+      expect(json.type).toBe('circle');
+
+      const restored = serializer['parseNode'](json);
+      expect(restored!.id).toBe('c2');
+      expect((restored as any).radius).toBe(50);
+      expect(restored!.rotation).toBe(0.3);
+      expect(restored!.scaleX).toBe(1.2);
     });
   });
 });
